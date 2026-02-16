@@ -32,4 +32,5 @@ urlpatterns = [
     # Apps
     path('', include('core.urls')),
     path('apartamentos/', include('apartamentos.urls')),
+    path('pagos/', include('pagos.urls')),
 ]

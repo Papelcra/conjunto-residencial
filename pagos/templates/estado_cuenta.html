@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Control de Pagos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-center">Control de Pago de Administración</h2>
+
+    <!-- BUSCADOR SIMPLE -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <input type="text" class="form-control" id="searchInput" placeholder="Buscar torre o apartamento...">
+        </div>
+    </div>
+
+    <!-- TORRES -->
+    <div class="row" id="towersContainer">
+
+        <!-- Torre 1 -->
+        <div class="col-md-6 mb-3 tower-card">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Torre A</h5>
+                    <ul class="list-group">
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center apartment-item">
+                            Apto 101
+                            <span class="badge bg-danger">Moroso</span>
+                            <button class="btn btn-sm btn-primary ms-2"
+                                onclick="showDetail('Torre A','101','Juan Pérez','250000','2 meses')">
+                                Ver
+                            </button>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center apartment-item">
+                            Apto 102
+                            <span class="badge bg-success">Al día</span>
+                            <button class="btn btn-sm btn-primary ms-2"
+                                onclick="showDetail('Torre A','102','Ana Gómez','0','0 meses')">
+                                Ver
+                            </button>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Torre 2 -->
+        <div class="col-md-6 mb-3 tower-card">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Torre B</h5>
+                    <ul class="list-group">
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center apartment-item">
+                            Apto 201
+                            <span class="badge bg-danger">Moroso</span>
+                            <button class="btn btn-sm btn-primary ms-2"
+                                onclick="showDetail('Torre B','201','Carlos Ruiz','180000','1 mes')">
+                                Ver
+                            </button>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center apartment-item">
+                            Apto 202
+                            <span class="badge bg-success">Al día</span>
+                            <button class="btn btn-sm btn-primary ms-2"
+                                onclick="showDetail('Torre B','202','Laura Díaz','0','0 meses')">
+                                Ver
+                            </button>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABLA CONSOLIDADA -->
+    <h4 class="mt-5 mb-3">Listado Consolidado</h4>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Torre</th>
+                <th>Apartamento</th>
+                <th>Inquilino</th>
+                <th>Saldo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Torre A</td>
+                <td>101</td>
+                <td>Juan Pérez</td>
+                <td>$250.000</td>
+                <td><span class="badge bg-danger">Moroso</span></td>
+            </tr>
+            <tr>
+                <td>Torre A</td>
+                <td>102</td>
+                <td>Ana Gómez</td>
+                <td>$0</td>
+                <td><span class="badge bg-success">Al día</span></td>
+            </tr>
+            <tr>
+                <td>Torre B</td>
+                <td>201</td>
+                <td>Carlos Ruiz</td>
+                <td>$180.000</td>
+                <td><span class="badge bg-danger">Moroso</span></td>
+            </tr>
+            <tr>
+                <td>Torre B</td>
+                <td>202</td>
+                <td>Laura Díaz</td>
+                <td>$0</td>
+                <td><span class="badge bg-success">Al día</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Detalle del Apartamento</h5>
+                <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Torre:</strong> <span id="modalTower"></span></p>
+                <p><strong>Apartamento:</strong> <span id="modalApartment"></span></p>
+                <p><strong>Inquilino:</strong> <span id="modalTenant"></span></p>
+                <p><strong>Saldo pendiente:</strong> $<span id="modalBalance"></span></p>
+                <p><strong>Meses vencidos:</strong> <span id="modalMonths"></span></p>
+
+                <button class="btn btn-warning w-100 mt-2">
+                    Enviar notificación
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function showDetail(tower, apartment, tenant, balance, months) {
+        document.getElementById("modalTower").innerText = tower;
+        document.getElementById("modalApartment").innerText = apartment;
+        document.getElementById("modalTenant").innerText = tenant;
+        document.getElementById("modalBalance").innerText = balance;
+        document.getElementById("modalMonths").innerText = months;
+
+        var myModal = new bootstrap.Modal(document.getElementById('detailModal'));
+        myModal.show();
+    }
+
+    // Buscador simple
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        let value = this.value.toLowerCase();
+        let items = document.querySelectorAll(".apartment-item");
+
+        items.forEach(function(item) {
+            item.style.display = item.textContent.toLowerCase().includes(value) ? "" : "none";
+        });
+    });
+</script>
+
+</body>
+</html>
