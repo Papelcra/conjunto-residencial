@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Seguridad{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Panel de Seguridad</h1>
+    <div class="alert alert-info">
+        Bienvenido, {{ user.get_full_name|default:user.username }}
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Reservas del día</h5>
+                    <p>Verifica zonas comunes hoy</p>
+                    <a href="#" class="btn btn-primary">Ver reservas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Lista de residentes</h5>
+                    <p>Consulta información rápida</p>
+                    <a href="#" class="btn btn-primary">Ver residentes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+# Python y Django
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.env
+*.env.local
+*.env.development
+*.env.test
+
+# Archivos de base de datos
+*.sqlite3
+*.db
+
+# Archivos de media y static (si no los quieres versionar)
+media/
+staticfiles/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo

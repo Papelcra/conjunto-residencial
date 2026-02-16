@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Mi Panel de Residente</h1>
+    <div class="alert alert-success">
+        Bienvenido, {{ user.get_full_name|default:user.username }}
+    </div>
+    
+    <p><strong>Apartamento:</strong> {{ user.apartamento.identificador|default:"No asignado" }}</p>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5>Mis Reservas</h5>
+                    <a href="#" class="btn btn-primary">Ver / Reservar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5>Notificar Pago</h5>
+                    <a href="#" class="btn btn-primary">Subir comprobante</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5>PQRS</h5>
+                    <a href="#" class="btn btn-primary">Reportar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrador{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Panel de Administración</h1>
+    <div class="alert alert-primary">
+        Bienvenido, {{ user.get_full_name|default:user.username }} (Administrador)
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5>Apartamentos</h5>
+                    <p>Gestiona residentes y estados</p>
+                    <a href="#" class="btn btn-primary">Ir a apartamentos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5>Pagos y morosidad</h5>
+                    <p>Registra y consulta pagos</p>
+                    <a href="#" class="btn btn-primary">Ir a pagos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h5>Anuncios y novedades</h5>
+                    <p>Publica información</p>
+                    <a href="#" class="btn btn-primary">Ir a anuncios</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
