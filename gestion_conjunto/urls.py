@@ -10,7 +10,7 @@ from core.views import CustomLogoutView
 # Vista del dashboard dinámico por rol
 @login_required
 def dashboard(request):
-    if request.user.es_admin:
+    if request.user.is_superuser:
         template = 'dashboard_admin.html'
     elif request.user.es_seguridad:
         template = 'dashboard_seguridad.html'
