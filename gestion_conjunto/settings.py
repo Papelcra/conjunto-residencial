@@ -22,10 +22,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-45r$s=cpzx!4l6ji*k9^dzh90+19d5=2bt22gryze(ir$7262)'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
 
-ALLOWED_HOSTS = []
+# Esto es lo que falta: STATIC_ROOT para producción
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Opcional pero recomendado: STATICFILES_DIRS si tienes archivos estáticos personalizados
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # carpeta donde pones tus archivos estáticos personalizados
+]
+
+# En producción (Render) desactivamos debug
+DEBUG = False
+
+# Hosts permitidos (Render te da un dominio .onrender.com)
+ALLOWED_HOSTS = ['*']  # temporal para pruebas; luego pon el dominio real
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
