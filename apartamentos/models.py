@@ -1,11 +1,8 @@
-# apartamentos/models.py
-
 from django.db import models
 from django.conf import settings
 
 
 class Apartamento(models.Model):
-    # Estados de ocupación / situación comercial
     ESTADO_VIVIENDA = (
         ('residiendo', 'Residiendo (propietario viviendo)'),
         ('arrendado', 'Arrendado (alquilado)'),
@@ -15,24 +12,19 @@ class Apartamento(models.Model):
         ('bloqueado', 'Bloqueado / Embargado / Prohibido uso'),
     )
 
-    # Identificador principal del apartamento
-    # Ejemplos: 101, 202-A, 1503, PH-05, etc.
     identificador = models.CharField(
-        max_length=20,
+        max_length=30,  # aumentado para códigos más largos
         unique=True,
-        help_text="Número, código o referencia única del apartamento (ej: 101, 1503, PH-02)",
+        help_text="Número, código o referencia única del apartamento",
         verbose_name="Identificador / Número de apartamento"
     )
 
-    # Opcional: si aún quieres separar torre o bloque
     bloque_o_torre = models.CharField(
         max_length=10,
         blank=True,
-        verbose_name="Torre / Bloque",
-        help_text="Ej: A, B, C, Norte, Sur... (opcional)"
+        verbose_name="Torre / Bloque"
     )
 
-    # Área en metros cuadrados (útil para administración, cuotas, etc.)
     area_m2 = models.DecimalField(
         max_digits=7,
         decimal_places=2,
@@ -41,16 +33,13 @@ class Apartamento(models.Model):
         verbose_name="Área (m²)"
     )
 
-    # Estado actual de la vivienda
     estado = models.CharField(
-        max_length=30,
+        max_length=30,  # ← CAMBIO IMPORTANTE: de 20 a 30
         choices=ESTADO_VIVIENDA,
         default='desocupado',
         verbose_name="Estado de la vivienda"
     )
 
-    # Relación con el residente / ocupante principal actual
-    # Solo aplica si está residiendo o arrendado
     ocupante_actual = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -58,11 +47,9 @@ class Apartamento(models.Model):
         blank=True,
         related_name='apartamentos_ocupados',
         verbose_name="Ocupante / Residente actual",
-        limit_choices_to={'rol': 'residente'},  # solo usuarios con rol residente
-        help_text="Persona que vive o arrienda actualmente (si aplica)"
+        limit_choices_to={'rol': 'residente'}
     )
 
-    # Datos adicionales útiles
     piso = models.PositiveSmallIntegerField(
         blank=True,
         null=True,
@@ -71,8 +58,7 @@ class Apartamento(models.Model):
 
     notas = models.TextField(
         blank=True,
-        verbose_name="Notas / Observaciones",
-        help_text="Ej: remodelado 2024, tiene mascota, problemas con parqueadero, etc."
+        verbose_name="Notas / Observaciones"
     )
 
     creado_en = models.DateTimeField(auto_now_add=True)
@@ -82,10 +68,6 @@ class Apartamento(models.Model):
         verbose_name = "Apartamento"
         verbose_name_plural = "Apartamentos"
         ordering = ['identificador']
-        indexes = [
-            models.Index(fields=['identificador']),
-            models.Index(fields=['estado']),
-        ]
 
     def __str__(self):
         if self.bloque_o_torre:
@@ -94,6 +76,3 @@ class Apartamento(models.Model):
 
     def esta_ocupado(self):
         return self.estado in ('residiendo', 'arrendado')
-
-    def tiene_ocupante(self):
-        return self.ocupante_actual is not None

@@ -10,14 +10,13 @@ class Usuario(AbstractUser):
     )
 
     rol = models.CharField(
-        max_length=20,
+        max_length=30,  # ← de 20 a 30 por consistencia
         choices=ROLES,
         default='residente',
         verbose_name="Rol del usuario"
     )
     telefono = models.CharField(max_length=20, blank=True, null=True)
     documento = models.CharField(max_length=20, unique=True, blank=True, null=True)
-    # Relación con apartamento → la crearemos después cuando hagamos el modelo Apartment
 
     def __str__(self):
         return f"{self.get_full_name() or self.username} — {self.get_rol_display()}"
