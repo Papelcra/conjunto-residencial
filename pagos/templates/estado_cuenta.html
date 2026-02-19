@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Control de Pagos{% endblock %}
+
+{% block content %}
+
+<style>
+.tower-header{
+    cursor:pointer;
+    font-weight:600;
+    font-size:18px;
+}
+
+.apartment{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-top:1px solid #eee;
+}
+
+.tower-info{
+    background:#f8f9fa;
+    border-radius:6px;
+    padding:10px;
+    margin-bottom:10px;
+    font-size:14px;
+}
+</style>
+
+<div class="container mt-4">
+
+<h2 class="text-center mb-4">Control de Pago de Administración</h2>
+
+<!-- BUSCADOR -->
+<input 
+    type="text" 
+    id="searchInput" 
+    class="form-control form-control-lg mb-3" 
+    placeholder="Buscar apartamento (Ej: A-101 o T-A-101)"
+>
+
+<!-- BOTÓN TORRES -->
+<button id="toggleTowers" class="btn btn-primary mb-4">
+    Ver torres
+</button>
+
+<!-- TORRES -->
+<div id="towersContainer" class="d-none">
+
+    <!-- TORRE A -->
+    <div class="card shadow-sm mb-3 tower-card">
+        <div class="card-header tower-header">Torre A</div>
+
+        <div class="card-body apartments d-none">
+
+            <div class="tower-info">
+                <strong>Total aptos:</strong> 2 |
+                <strong>Morosos:</strong> 1 |
+                <strong>Al día:</strong> 1
+            </div>
+
+            <div class="apartment"
+                 data-apto="A-101"
+                 data-tower="Torre A"
+                 data-tenant="Juan Pérez"
+                 data-balance="250000"
+                 data-months="2"
+                 data-status="Moroso">
+                <span>Apto 101</span>
+                <button class="btn btn-sm btn-danger">Ver</button>
+            </div>
+
+            <div class="apartment"
+                 data-apto="A-102"
+                 data-tower="Torre A"
+                 data-tenant="Ana Gómez"
+                 data-balance="0"
+                 data-months="0"
+                 data-status="Al día">
+                <span>Apto 102</span>
+                <button class="btn btn-sm btn-success">Ver</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- LISTADO CONSOLIDADO -->
+<h4 class="mt-5 mb-3">Listado Consolidado</h4>
+
+<table class="table table-bordered table-striped">
+<thead class="table-dark">
+<tr>
+    <th>Torre</th>
+    <th>Apartamento</th>
+    <th>Inquilino</th>
+    <th>Saldo</th>
+    <th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td>Torre A</td>
+    <td>101</td>
+    <td>Juan Pérez</td>
+    <td>$250.000</td>
+    <td><span class="badge bg-danger">Moroso</span></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+
+<div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">Detalle del Apartamento</h5>
+    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <p><strong>Torre:</strong> <span id="mTower"></span></p>
+    <p><strong>Apartamento:</strong> <span id="mApto"></span></p>
+    <p><strong>Inquilino:</strong> <span id="mTenant"></span></p>
+    <p><strong>Saldo pendiente:</strong> $<span id="mBalance"></span></p>
+    <p><strong>Meses vencidos:</strong> <span id="mMonths"></span></p>
+    <p><strong>Estado:</strong> <span id="mStatus"></span></p>
+
+    <button class="btn btn-warning w-100 mt-2">
+        Enviar notificación
+    </button>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+
+document.getElementById("toggleTowers").addEventListener("click", function () {
+    document.getElementById("towersContainer").classList.toggle("d-none");
+});
+
+document.querySelectorAll(".tower-header").forEach(header => {
+    header.addEventListener("click", function () {
+        this.nextElementSibling.classList.toggle("d-none");
+    });
+});
+
+document.querySelectorAll(".apartment button").forEach(btn => {
+
+    btn.addEventListener("click", function () {
+
+        let apto = this.closest(".apartment");
+
+        document.getElementById("mTower").innerText = apto.dataset.tower;
+        document.getElementById("mApto").innerText = apto.dataset.apto;
+        document.getElementById("mTenant").innerText = apto.dataset.tenant;
+        document.getElementById("mBalance").innerText = apto.dataset.balance;
+        document.getElementById("mMonths").innerText = apto.dataset.months;
+        document.getElementById("mStatus").innerText = apto.dataset.status;
+
+        new bootstrap.Modal(document.getElementById('detailModal')).show();
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

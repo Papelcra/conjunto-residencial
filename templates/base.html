@@ -21,7 +21,8 @@
 <body class="d-flex flex-column min-vh-100 bg-light">
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top" style="backdrop-filter: blur(6px);">
+
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="{% url 'home' %}">
                 <i class="bi bi-building-fill me-2"></i>Conjunto Residencial
@@ -107,7 +108,8 @@
     </nav>
 
     <!-- Contenido principal -->
-    <main class="container py-4 flex-grow-1">
+    <main class="container py-4 flex-grow-1" style="margin-top:80px; margin-bottom:70px;">
+
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -122,7 +124,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-auto">
+    <footer class="bg-dark text-white text-center py-1 fixed-bottom">
         <small>Gestión del Conjunto Residencial © {{ 'now'|date:"Y" }} - Soacha, Cundinamarca</small>
     </footer>
 

@@ -83,7 +83,10 @@ ROOT_URLCONF = 'gestion_conjunto.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',                 # carpeta global de templates
+            BASE_DIR / "pagos" / "templates",       # carpeta de templates de la app pagos
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
