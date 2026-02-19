@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Notificar Pago{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <h3 class="mb-4">Notificar Pago de Administración</h3>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <label>Apartamento</label>
+                        <input type="text" name="apartamento" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Residente</label>
+                        <input type="text" name="residente" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Fecha</label>
+                        <input type="date" name="fecha" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Comprobante</label>
+                        <input type="text" name="archivo" class="form-control" placeholder="archivo.jpg">
+                    </div>
+
+                </div>
+
+                <button class="btn btn-success mt-3">
+                    Enviar Notificación
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <a href="{% url 'mis_notificaciones' %}" class="btn btn-outline-primary">
+        Ver mis pagos
+    </a>
+
+</div>
+{% endblock %}

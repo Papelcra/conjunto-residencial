@@ -1,41 +1,74 @@
 {% extends "base.html" %}
 
-{% block title %}Mi Panel{% endblock %}
+{% block title %}Panel Residente{% endblock %}
 
 {% block content %}
+
 <div class="container mt-4">
-    <h1>Mi Panel de Residente</h1>
-    <div class="alert alert-success">
+
+    <h1 class="mb-4 fw-bold">Panel del Residente</h1>
+
+    <div class="alert alert-success shadow-sm">
         Bienvenido, {{ user.get_full_name|default:user.username }}
     </div>
-    
-    <p><strong>Apartamento:</strong> {{ user.apartamento.identificador|default:"No asignado" }}</p>
-    
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <h5>Mis Reservas</h5>
-                    <a href="#" class="btn btn-primary">Ver / Reservar</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <h5>Notificar Pago</h5>
-                    <a href="#" class="btn btn-primary">Subir comprobante</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <h5>PQRS</h5>
-                    <a href="#" class="btn btn-primary">Reportar</a>
-                </div>
-            </div>
-        </div>
+
+    <div class="mb-4 fs-5">
+        <strong>Apartamento:</strong> 
+        {{ user.apartamento.identificador|default:"No asignado" }}
     </div>
+
+    <div class="row g-4">
+
+        <!-- RESERVAS -->
+        <div class="col-md-4">
+            <div class="card dashboard-card h-100 text-center">
+                <div class="card-body">
+                    <div class="dashboard-icon bg-primary">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h5 class="mt-3">Mis Reservas</h5>
+                    <p class="text-muted">Reservar zonas comunes</p>
+                    <a href="#" class="btn btn-primary w-100">
+                        Ver / Reservar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGOS -->
+        <div class="col-md-4">
+            <div class="card dashboard-card h-100 text-center">
+                <div class="card-body">
+                    <div class="dashboard-icon bg-success">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <h5 class="mt-3">Notificar Pago</h5>
+                    <p class="text-muted">Subir comprobante</p>
+                    <a href="{% url 'notificar_pagos' %}" class="btn btn-success w-100">
+                        Subir comprobante
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PQRS -->
+        <div class="col-md-4">
+            <div class="card dashboard-card h-100 text-center">
+                <div class="card-body">
+                    <div class="dashboard-icon bg-warning">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h5 class="mt-3">PQRS</h5>
+                    <p class="text-muted">Reportes y solicitudes</p>
+                    <a href="#" class="btn btn-warning w-100">
+                        Reportar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}

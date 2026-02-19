@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Notificaciones{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h3 class="mb-4">Estado de mis Pagos</h3>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+
+            <table class="table table-striped mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Apto</th>
+                        <th>Fecha</th>
+                        <th>Comprobante</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for n in notificaciones %}
+                    <tr>
+                        <td>{{ n.apartamento }}</td>
+                        <td>{{ n.fecha }}</td>
+                        <td>{{ n.archivo }}</td>
+                        <td>
+                            {% if n.estado == "Pendiente" %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif n.estado == "Aprobado" %}
+                                <span class="badge bg-success">Aprobado</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rechazado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

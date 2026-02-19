@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Validar Pagos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">Notificaciones de Pago de Residentes</h2>
+
+    <div class="alert alert-info">
+        Aquí puedes aprobar o rechazar los pagos reportados por los residentes.
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Residente</th>
+                <th>Apartamento</th>
+                <th>Fecha reporte</th>
+                <th>Valor</th>
+                <th>Comprobante</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <!-- PAGO 1 -->
+            <tr>
+                <td>Juan Pérez</td>
+                <td>101</td>
+                <td>2026-02-18</td>
+                <td>$100.000</td>
+                <td>
+                    <button class="btn btn-sm btn-secondary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#comprobanteModal"
+                        data-img="https://via.placeholder.com/400x500?text=Comprobante+101">
+                        Ver
+                    </button>
+                </td>
+                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                <td>
+                    <button class="btn btn-sm btn-success aprobar-btn">Aprobar</button>
+                    <button class="btn btn-sm btn-danger rechazar-btn">Rechazar</button>
+                </td>
+            </tr>
+
+            <!-- PAGO 2 -->
+            <tr>
+                <td>Ana Gómez</td>
+                <td>102</td>
+                <td>2026-02-17</td>
+                <td>$100.000</td>
+                <td>
+                    <button class="btn btn-sm btn-secondary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#comprobanteModal"
+                        data-img="https://via.placeholder.com/400x500?text=Comprobante+102">
+                        Ver
+                    </button>
+                </td>
+                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                <td>
+                    <button class="btn btn-sm btn-success aprobar-btn">Aprobar</button>
+                    <button class="btn btn-sm btn-danger rechazar-btn">Rechazar</button>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+<!-- MODAL COMPROBANTE -->
+<div class="modal fade" id="comprobanteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Comprobante de Pago</h5>
+        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center">
+        <img id="comprobanteImg" src="" class="img-fluid rounded shadow">
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    // mostrar comprobante
+    document.querySelectorAll("[data-img]").forEach(btn=>{
+        btn.addEventListener("click", function(){
+            document.getElementById("comprobanteImg").src = this.dataset.img;
+        });
+    });
+
+    // aprobar
+    document.querySelectorAll(".aprobar-btn").forEach(btn=>{
+        btn.addEventListener("click", function(){
+            let row = this.closest("tr");
+            row.querySelector("span").className = "badge bg-success";
+            row.querySelector("span").innerText = "Aprobado";
+        });
+    });
+
+    // rechazar
+    document.querySelectorAll(".rechazar-btn").forEach(btn=>{
+        btn.addEventListener("click", function(){
+            let row = this.closest("tr");
+            row.querySelector("span").className = "badge bg-danger";
+            row.querySelector("span").innerText = "Rechazado";
+        });
+    });
+
+});
+</script>
+
+{% endblock %}
