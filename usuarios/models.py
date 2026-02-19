@@ -10,7 +10,7 @@ class Usuario(AbstractUser):
     )
 
     rol = models.CharField(
-        max_length=30,  # ← de 20 a 30 por consistencia
+        max_length=30,  # ← aumentado de 20 a 30
         choices=ROLES,
         default='residente',
         verbose_name="Rol del usuario"

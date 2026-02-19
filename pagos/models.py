@@ -50,7 +50,7 @@ class Pago(models.Model):
     )
 
     estado = models.CharField(
-        max_length=30,  # ← CAMBIO: de 20 a 30
+        max_length=30,  # ← CAMBIO CLAVE: de 20 a 30
         choices=ESTADOS_PAGO,
         default='pendiente',
         verbose_name="Estado del pago"

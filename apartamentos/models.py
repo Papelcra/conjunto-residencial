@@ -13,7 +13,7 @@ class Apartamento(models.Model):
     )
 
     identificador = models.CharField(
-        max_length=30,  # aumentado para códigos más largos
+        max_length=30,  # aumentado para mayor flexibilidad
         unique=True,
         help_text="Número, código o referencia única del apartamento",
         verbose_name="Identificador / Número de apartamento"
@@ -34,7 +34,7 @@ class Apartamento(models.Model):
     )
 
     estado = models.CharField(
-        max_length=30,  # ← CAMBIO IMPORTANTE: de 20 a 30
+        max_length=30,  # ← CAMBIO CLAVE: de 20 a 30
         choices=ESTADO_VIVIENDA,
         default='desocupado',
         verbose_name="Estado de la vivienda"
@@ -68,6 +68,10 @@ class Apartamento(models.Model):
         verbose_name = "Apartamento"
         verbose_name_plural = "Apartamentos"
         ordering = ['identificador']
+        indexes = [
+            models.Index(fields=['identificador']),
+            models.Index(fields=['estado']),
+        ]
 
     def __str__(self):
         if self.bloque_o_torre:
