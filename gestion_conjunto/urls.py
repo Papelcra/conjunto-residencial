@@ -5,15 +5,20 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from core.views import CustomLogoutView
 
-# Vista del dashboard dinámico por rol
+# Vista del dashboard dinámico por rol (CORREGIDA)
 @login_required
 def dashboard(request):
-    if request.user.is_superuser:
+    # Recargar el usuario desde la base de datos (evita caché vieja)
+    request.user.refresh_from_db()
+
+    # Usar el campo rol directamente (más confiable que solo is_superuser)
+    if request.user.rol == 'admin':
         template = 'dashboard_admin.html'
-    elif request.user.es_seguridad:
+    elif request.user.rol == 'seguridad':
         template = 'dashboard_seguridad.html'
     else:
         template = 'dashboard_residente.html'
+
     return render(request, template, {'user': request.user})
 
 urlpatterns = [
