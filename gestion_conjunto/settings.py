@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -109,12 +112,26 @@ WSGI_APPLICATION = 'gestion_conjunto.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import dj_database_url 
+
+load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Si hay DATABASE_URL (en Render), usa PostgreSQL automáticamente
+DATABASES['default'] = dj_database_url.config(
+    default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # fallback local
+    conn_max_age=600,
+    conn_health_checks=True,
+    ssl_require=True  # Render lo requiere
+)
 
 
 # Password validation
