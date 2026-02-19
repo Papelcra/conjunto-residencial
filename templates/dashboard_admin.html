@@ -19,6 +19,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body text-center">
@@ -28,6 +29,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body text-center">
@@ -37,6 +39,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- 🔴 NUEVA TARJETA -->
+        <div class="col-md-4">
+            <div class="card mb-4 border-success">
+                <div class="card-body text-center">
+                    <h5>Usuarios del sistema</h5>
+                    <p>Crear administradores, seguridad y residentes</p>
+                    <a href="{% url 'crear_usuario' %}" class="btn btn-success">
+                        Gestionar usuarios
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,23 @@
+<h2>Usuarios del Sistema</h2>
+
+<table border="1">
+    <tr>
+        <th>Usuario</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Fecha creación</th>
+    </tr>
+
+    {% for u in usuarios %}
+    <tr>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+            {% if u.es_admin %}Admin{% elif u.es_seguridad %}Seguridad{% else %}Residente{% endif %}
+        </td>
+        <td>{{ u.date_joined }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'core:dashboard_admin' %}">Volver al panel</a>

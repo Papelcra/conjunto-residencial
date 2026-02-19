@@ -23,11 +23,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-45r$s=cpzx!4l6ji*k9^dzh90+19d5=2bt22gryze(ir$7262)'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+# Detectar entorno
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "local")
 
+if ENVIRONMENT == "production":
+    DEBUG = False
+    ALLOWED_HOSTS = ["proyecto-fenix.onrender.com"]
+else:
+    # Desarrollo local
+    DEBUG = True
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
-ALLOWED_HOSTS = ['*']  # Temporal para pruebas; en producción pon tu dominio .onrender.com
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
@@ -68,14 +74,14 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-
 ]
 
 ROOT_URLCONF = 'gestion_conjunto.urls'

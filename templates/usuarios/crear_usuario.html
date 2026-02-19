@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Crear nuevo usuario</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <button type="submit" class="btn btn-success">
+                    Crear Usuario
+                </button>
+
+                <a href="{% url 'core:dashboard_admin' %}" class="btn btn-secondary">
+
+                    Volver
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

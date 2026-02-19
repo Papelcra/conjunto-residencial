@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from apartamentos.models import Apartamento
-
+from django.http import HttpResponseForbidden
 
 @login_required
 def lista_apartamentos(request):
@@ -40,3 +40,10 @@ class CustomLogoutView(LogoutView):
         # Mensaje opcional (queda muy bien)
         messages.success(request, "Has cerrado sesión correctamente. ¡Vuelve pronto!")
         return super().dispatch(request, *args, **kwargs)
+    
+@login_required
+def dashboard_admin(request):
+    if not request.user.es_admin:
+        return HttpResponseForbidden("No tienes permisos para acceder aquí.")
+
+    return render(request, "dashboard_admin.html")
