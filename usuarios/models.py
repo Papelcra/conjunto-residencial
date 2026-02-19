@@ -10,13 +10,13 @@ class Usuario(AbstractUser):
     )
 
     rol = models.CharField(
-        max_length=30,  # ← aumentado de 20 a 30
+        max_length=40,  # ← aumentado de 20 a 30
         choices=ROLES,
         default='residente',
         verbose_name="Rol del usuario"
     )
-    telefono = models.CharField(max_length=20, blank=True, null=True)
-    documento = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    telefono = models.CharField(max_length=30, blank=True, null=True)
+    documento = models.CharField(max_length=30, unique=True, blank=True, null=True)
 
     def __str__(self):
         return f"{self.get_full_name() or self.username} — {self.get_rol_display()}"

@@ -44,7 +44,7 @@
                                 </a>
                             </li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people-fill me-1"></i>Usuarios</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-cash-coin me-1"></i>Pagos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-cash-coin me-1"></i>Pagos y morosidad</a></li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-calendar-event me-1"></i>Reservas</a></li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-megaphone me-1"></i>Anuncios</a></li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-exclamation-triangle me-1"></i>PQRS</a></li>
@@ -60,8 +60,12 @@
 
                         {% else %}  {# residente #}
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-house-door-fill me-1"></i>Mi apartamento</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'pagos:notificar' %}">
+                                    <i class="bi bi-receipt me-1"></i>Notificar pago
+                                </a>
+                            </li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-calendar-plus me-1"></i>Reservar zona común</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-receipt me-1"></i>Notificar pago</a></li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-chat-square-text me-1"></i>Mis PQRS</a></li>
                             <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-newspaper me-1"></i>Anuncios</a></li>
                         {% endif %}
@@ -81,7 +85,6 @@
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Mi perfil</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <!-- CAMBIO AQUÍ: formulario POST para logout -->
                                     <form method="post" action="{% url 'logout' %}">
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item text-danger border-0 bg-transparent text-start w-100">

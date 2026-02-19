@@ -5,8 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from core.views import CustomLogoutView
 
-
-
 # Vista del dashboard dinámico por rol
 @login_required
 def dashboard(request):
@@ -32,4 +30,5 @@ urlpatterns = [
     # Apps
     path('', include('core.urls')),
     path('apartamentos/', include('apartamentos.urls')),
+    path('pagos/', include('pagos.urls')),
 ]
