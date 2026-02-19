@@ -10,14 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from pathlib import Path
-from pathlib import Path
 import os
-from dotenv import load_dotenv
+from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -25,22 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-45r$s=cpzx!4l6ji*k9^dzh90+19d5=2bt22gryze(ir$7262)'
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True  # Cambia a False en producción (Render)
 
-# Esto es lo que falta: STATIC_ROOT para producción
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# Opcional pero recomendado: STATICFILES_DIRS si tienes archivos estáticos personalizados
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # carpeta donde pones tus archivos estáticos personalizados
-]
-
-# En producción (Render) desactivamos debug
-DEBUG = False
-
-# Hosts permitidos (Render te da un dominio .onrender.com)
-ALLOWED_HOSTS = ['*']  # temporal para pruebas; luego pon el dominio real
+ALLOWED_HOSTS = ['*']  # Temporal para pruebas; en producción pon tu dominio .onrender.com
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
@@ -65,7 +51,7 @@ INSTALLED_APPS = [
     'novedades',
     'core',
 
-    # Paquetes extras que instalaste
+    # Paquetes extras
     'crispy_forms',
     'crispy_bootstrap5',
     'widget_tweaks',
@@ -76,8 +62,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Configuración de autenticación
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = 'home'               # después de loguearse va al dashboard
-LOGOUT_REDIRECT_URL = '/accounts/login/' # ← esto es lo que falta o está mal
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -94,10 +80,11 @@ ROOT_URLCONF = 'gestion_conjunto.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],   # carpeta global de templates
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -110,14 +97,6 @@ WSGI_APPLICATION = 'gestion_conjunto.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-import dj_database_url 
-
-load_dotenv()
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -125,18 +104,16 @@ DATABASES = {
     }
 }
 
-# Si hay DATABASE_URL (en Render), usa PostgreSQL automáticamente
-DATABASES['default'] = dj_database_url.config(
-    default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # fallback local
-    conn_max_age=600,
-    conn_health_checks=True,
-    ssl_require=True  # Render lo requiere
-)
+# En producción (Render) usa PostgreSQL si hay DATABASE_URL
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=True
+    )
 
 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -154,8 +131,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'America/Bogota'
 USE_I18N = True
@@ -166,6 +141,10 @@ ADMIN_INDEX_TITLE = "Panel de Administración"
 ADMIN_SITE_TITLE = "Admin Conjunto"
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Opcional: si tienes archivos estáticos personalizados
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
