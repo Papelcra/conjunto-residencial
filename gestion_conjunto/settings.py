@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['*']  # Temporal para pruebas; en producción pon tu dominio .o
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Tus aplicaciones
-    'usuarios.apps.UsuariosConfig',
+    'usuarios',  # ← solo una vez
     'apartamentos',
     'pagos',
     'reservas',
