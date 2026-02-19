@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Nuevo Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Crear Nuevo Usuario</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="card p-4 shadow">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="col-md-6">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+            </div>
+            <div class="col-md-6">
+                {{ form.rol.label_tag }}
+                {{ form.rol }}
+            </div>
+            <div class="col-md-6">
+                {{ form.telefono.label_tag }}
+                {{ form.telefono }}
+            </div>
+            <div class="col-md-6">
+                {{ form.documento.label_tag }}
+                {{ form.documento }}
+            </div>
+            <div class="col-md-6">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+            </div>
+            <div class="col-md-6">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">Crear Usuario</button>
+    </form>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Volver al Dashboard</a>
+</div>
+{% endblock %}
