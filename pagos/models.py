@@ -1,5 +1,5 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
 from apartamentos.models import Apartamento
 
 
@@ -50,7 +50,7 @@ class Pago(models.Model):
     )
 
     estado = models.CharField(
-        max_length=30,  # ← CAMBIO CLAVE: de 20 a 30
+        max_length=30,
         choices=ESTADOS_PAGO,
         default='pendiente',
         verbose_name="Estado del pago"
@@ -71,3 +71,14 @@ class Pago(models.Model):
 
     def __str__(self):
         return f"{self.periodo} - {self.apartamento} ({self.estado})"
+
+
+class Notificacion(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=100)
+    mensaje = models.TextField()
+    leida = models.BooleanField(default=False)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario} - {self.titulo}"

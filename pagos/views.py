@@ -2,15 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
-from django.utils import timezone
 from .forms import NotificarPagoForm
 from .models import Pago
 from apartamentos.models import Apartamento
-from usuarios.models import Usuario
 
 
 # =============================
-# VISTA REAL (TU VERSIÓN - MANTENERLA SIEMPRE)
+# NOTIFICAR PAGO (RESIDENTE)
 # =============================
 @login_required
 def notificar_pago(request):
@@ -18,13 +16,10 @@ def notificar_pago(request):
         messages.error(request, "Solo los residentes pueden notificar pagos.")
         return redirect('home')
 
-    try:
-        apartamento = request.user.apartamento
-    except AttributeError:
-        apartamento = None
+    apartamento = getattr(request.user, "apartamento", None)
 
     if not apartamento:
-        messages.error(request, "No tienes un apartamento asignado. Contacta a administración.")
+        messages.error(request, "No tienes un apartamento asignado.")
         return redirect('home')
 
     if request.method == 'POST':
@@ -35,19 +30,19 @@ def notificar_pago(request):
             pago.residente = request.user
             pago.estado = 'pendiente'
             pago.save()
-            messages.success(request, "Pago notificado exitosamente. Espera la verificación de la administración.")
+            messages.success(request, "Pago notificado correctamente.")
             return redirect('home')
     else:
         form = NotificarPagoForm()
 
-    return render(request, 'pagos/notificar_pago.html', {
-        'form': form,
-        'apartamento': apartamento,
+    return render(request, "pagos/notificar_pago.html", {
+        "form": form,
+        "apartamento": apartamento
     })
 
 
 # =============================
-# VISTAS DE DEVELOP - ADAPTADAS A MODELOS REALES (NO SIMULADAS)
+# ESTADO DE CUENTA (RESIDENTE)
 # =============================
 @login_required
 def estado_cuenta(request):
@@ -55,10 +50,7 @@ def estado_cuenta(request):
         messages.error(request, "Solo residentes pueden ver su estado de cuenta.")
         return redirect('home')
 
-    try:
-        apartamento = request.user.apartamento
-    except AttributeError:
-        apartamento = None
+    apartamento = getattr(request.user, "apartamento", None)
 
     if not apartamento:
         messages.error(request, "No tienes apartamento asignado.")
@@ -70,84 +62,45 @@ def estado_cuenta(request):
     return render(request, "pagos/estado_cuenta.html", {
         "apartamento": apartamento,
         "pagos": pagos,
-        "total_pagado": total_pagado,
+        "total_pagado": total_pagado
     })
 
 
+# =============================
+# ESTADO PAGOS (ADMIN)
+# =============================
 @login_required
 def estado_pagos(request):
     if not (request.user.es_admin or request.user.es_seguridad):
-        messages.error(request, "No tienes permiso para ver estado de pagos.")
+        messages.error(request, "No tienes permiso.")
         return redirect('home')
 
     apartamentos = Apartamento.objects.all()
     estados = []
+
     for apto in apartamentos:
         pagos = Pago.objects.filter(apartamento=apto, estado='aprobado')
         total_pagado = sum(p.monto for p in pagos)
-        # Puedes agregar lógica de deuda si tienes valor_admin en Apartamento
-        deuda = 0  # calcula aquí si tienes modelo de cuotas
 
         estados.append({
             "apartamento": apto,
             "total_pagado": total_pagado,
-            "deuda": deuda,
-            "al_dia": deuda == 0,
+            "deuda": 0,
+            "al_dia": True
         })
 
     return render(request, "pagos/estado_pagos.html", {
-        "estados": estados,
+        "estados": estados
     })
 
 
-@login_required
-def registrar_pago(request):
-    if not request.user.es_admin:
-        messages.error(request, "Solo administradores pueden registrar pagos.")
-        return redirect('home')
-
-    # Aquí iría formulario real para registrar pago (puedes crearlo después)
-    messages.success(request, "Pago registrado (funcionalidad pendiente).")
-    return redirect("estado_pagos")
-
-
-@login_required
-def historial_pagos(request, apto_id):
-    apartamento = get_object_or_404(Apartamento, id=apto_id)
-    pagos = Pago.objects.filter(apartamento=apartamento).order_by('-fecha_pago')
-
-    return render(request, "pagos/historial_pagos.html", {
-        "apartamento": apartamento,
-        "pagos": pagos
-    })
-
-
-@login_required
-def reporte_pagos(request):
-    if not request.user.es_admin:
-        messages.error(request, "Solo administradores pueden generar reportes.")
-        return redirect('home')
-
-    pagos = Pago.objects.all().order_by('-fecha_pago')
-    texto = "REPORTE DE PAGOS\n\n"
-    for p in pagos:
-        texto += f"{p.apartamento.identificador} - {p.residente.get_full_name()} - {p.monto} - {p.fecha_pago} - {p.estado}\n"
-
-    response = HttpResponse(texto, content_type="text/plain")
-    response["Content-Disposition"] = "attachment; filename=reporte_pagos.txt"
-    return response
-
-
-@login_required
-def notificar_pagos(request):
-    # Redirige a tu vista real
-    return notificar_pago(request)
-
-
+# =============================
+# VALIDAR PAGOS (ADMIN)
+# =============================
 @login_required
 def validar_pagos(request):
     if not request.user.es_admin:
-        messages.error(request, "Solo administradores pueden validar pagos.")
+        messages.error(request, "Solo administradores.")
         return redirect('home')
 
     pagos_pendientes = Pago.objects.filter(estado='pendiente').order_by('-creado_en')
@@ -160,33 +113,52 @@ def validar_pagos(request):
 @login_required
 def aprobar_pago(request, pago_id):
     if not request.user.es_admin:
-        messages.error(request, "Solo administradores pueden aprobar pagos.")
+        messages.error(request, "Solo administradores.")
         return redirect('home')
 
     pago = get_object_or_404(Pago, id=pago_id)
     pago.estado = 'aprobado'
     pago.save()
-    messages.success(request, f"Pago {pago.id} aprobado.")
+
+    messages.success(request, "Pago aprobado.")
     return redirect("validar_pagos")
 
 
 @login_required
 def rechazar_pago(request, pago_id):
     if not request.user.es_admin:
-        messages.error(request, "Solo administradores pueden rechazar pagos.")
+        messages.error(request, "Solo administradores.")
         return redirect('home')
 
     pago = get_object_or_404(Pago, id=pago_id)
     pago.estado = 'rechazado'
     pago.save()
-    messages.success(request, f"Pago {pago.id} rechazado.")
+
+    messages.success(request, "Pago rechazado.")
     return redirect("validar_pagos")
 
 
+# =============================
+# HISTORIAL PAGOS
+# =============================
+@login_required
+def historial_pagos(request, apto_id):
+    apartamento = get_object_or_404(Apartamento, id=apto_id)
+    pagos = Pago.objects.filter(apartamento=apartamento).order_by('-fecha_pago')
+
+    return render(request, "pagos/historial_pagos.html", {
+        "apartamento": apartamento,
+        "pagos": pagos
+    })
+
+
+# =============================
+# MIS NOTIFICACIONES (RESIDENTE)
+# =============================
 @login_required
 def mis_notificaciones(request):
     if not request.user.es_residente:
-        messages.error(request, "Solo residentes pueden ver sus notificaciones.")
+        messages.error(request, "Solo residentes.")
         return redirect('home')
 
     pagos = Pago.objects.filter(residente=request.user).order_by('-creado_en')
@@ -194,3 +166,23 @@ def mis_notificaciones(request):
     return render(request, "pagos/mis_notificaciones.html", {
         "pagos": pagos
     })
+
+
+# =============================
+# REPORTE TXT
+# =============================
+@login_required
+def reporte_pagos(request):
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores.")
+        return redirect('home')
+
+    pagos = Pago.objects.all().order_by('-fecha_pago')
+
+    texto = "REPORTE DE PAGOS\n\n"
+    for p in pagos:
+        texto += f"{p.apartamento} - {p.residente} - {p.monto} - {p.fecha_pago} - {p.estado}\n"
+
+    response = HttpResponse(texto, content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=reporte_pagos.txt"
+    return response

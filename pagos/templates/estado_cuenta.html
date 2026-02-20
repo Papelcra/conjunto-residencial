@@ -5,47 +5,111 @@
 {% block content %}
 
 <style>
+
+body{
+    background: linear-gradient(135deg, #eef2f7, #f8fafc);
+}
+
+h2{
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.tower-card{
+    border:none;
+    border-radius:14px;
+    transition:0.3s ease;
+}
+
+.tower-card:hover{
+    transform:translateY(-3px);
+}
+
 .tower-header{
     cursor:pointer;
     font-weight:600;
     font-size:18px;
+    background:linear-gradient(90deg,#1e3c72,#2a5298);
+    color:white;
+    border-radius:14px 14px 0 0;
 }
 
 .apartment{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:8px 0;
-    border-top:1px solid #eee;
+    padding:12px;
+    border-radius:8px;
+    transition:0.2s ease;
+}
+
+.apartment:hover{
+    background:#f1f5ff;
 }
 
 .tower-info{
-    background:#f8f9fa;
-    border-radius:6px;
-    padding:10px;
-    margin-bottom:10px;
+    background:#eef4ff;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:15px;
     font-size:14px;
 }
+
+#searchInput{
+    border-radius:30px;
+    padding:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+
+#toggleTowers{
+    border-radius:30px;
+    padding:10px 25px;
+    font-weight:600;
+}
+
+.table{
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 6px 20px rgba(0,0,0,0.05);
+}
+
+.table thead{
+    background:linear-gradient(90deg,#1e3c72,#2a5298);
+    color:white;
+}
+
+.modal-content{
+    border-radius:15px;
+    border:none;
+}
+
+.modal-header{
+    border-radius:15px 15px 0 0;
+}
+
+.badge{
+    padding:6px 12px;
+    font-size:13px;
+    border-radius:20px;
+}
+
 </style>
 
 <div class="container mt-4">
 
 <h2 class="text-center mb-4">Control de Pago de Administración</h2>
 
-<!-- BUSCADOR -->
 <input 
     type="text" 
     id="searchInput" 
     class="form-control form-control-lg mb-3" 
-    placeholder="Buscar apartamento (Ej: A-101 o T-A-101)"
+    placeholder="Buscar apartamento (Ej: A-101)"
 >
 
-<!-- BOTÓN TORRES -->
 <button id="toggleTowers" class="btn btn-primary mb-4">
     Ver torres
 </button>
 
-<!-- TORRES -->
 <div id="towersContainer" class="d-none">
 
     <!-- TORRE A -->
@@ -68,7 +132,9 @@
                  data-months="2"
                  data-status="Moroso">
                 <span>Apto 101</span>
-                <button class="btn btn-sm btn-danger">Ver</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
+                    Ver
+                </button>
             </div>
 
             <div class="apartment"
@@ -79,7 +145,50 @@
                  data-months="0"
                  data-status="Al día">
                 <span>Apto 102</span>
-                <button class="btn btn-sm btn-success">Ver</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
+                    Ver
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TORRE B -->
+    <div class="card shadow-sm mb-3 tower-card">
+        <div class="card-header tower-header">Torre B</div>
+
+        <div class="card-body apartments d-none">
+
+            <div class="tower-info">
+                <strong>Total aptos:</strong> 2 |
+                <strong>Morosos:</strong> 1 |
+                <strong>Al día:</strong> 1
+            </div>
+
+            <div class="apartment"
+                 data-apto="B-201"
+                 data-tower="Torre B"
+                 data-tenant="Carlos Ruiz"
+                 data-balance="180000"
+                 data-months="1"
+                 data-status="Moroso">
+                <span>Apto 201</span>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
+                    Ver
+                </button>
+            </div>
+
+            <div class="apartment"
+                 data-apto="B-202"
+                 data-tower="Torre B"
+                 data-tenant="Laura Díaz"
+                 data-balance="0"
+                 data-months="0"
+                 data-status="Al día">
+                <span>Apto 202</span>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
+                    Ver
+                </button>
             </div>
 
         </div>
@@ -87,7 +196,6 @@
 
 </div>
 
-<!-- LISTADO CONSOLIDADO -->
 <h4 class="mt-5 mb-3">Listado Consolidado</h4>
 
 <table class="table table-bordered table-striped">
@@ -107,6 +215,27 @@
     <td>Juan Pérez</td>
     <td>$250.000</td>
     <td><span class="badge bg-danger">Moroso</span></td>
+</tr>
+<tr>
+    <td>Torre A</td>
+    <td>102</td>
+    <td>Ana Gómez</td>
+    <td>$0</td>
+    <td><span class="badge bg-success">Al día</span></td>
+</tr>
+<tr>
+    <td>Torre B</td>
+    <td>201</td>
+    <td>Carlos Ruiz</td>
+    <td>$180.000</td>
+    <td><span class="badge bg-danger">Moroso</span></td>
+</tr>
+<tr>
+    <td>Torre B</td>
+    <td>202</td>
+    <td>Laura Díaz</td>
+    <td>$0</td>
+    <td><span class="badge bg-success">Al día</span></td>
 </tr>
 </tbody>
 </table>
@@ -131,7 +260,7 @@
     <p><strong>Meses vencidos:</strong> <span id="mMonths"></span></p>
     <p><strong>Estado:</strong> <span id="mStatus"></span></p>
 
-    <button class="btn btn-warning w-100 mt-2">
+    <button id="sendNotification" class="btn btn-warning w-100 mt-2">
         Enviar notificación
     </button>
 </div>
@@ -142,21 +271,26 @@
 
 <script>
 
+// MOSTRAR TORRES
 document.getElementById("toggleTowers").addEventListener("click", function () {
     document.getElementById("towersContainer").classList.toggle("d-none");
 });
 
+// ABRIR TORRE
 document.querySelectorAll(".tower-header").forEach(header => {
     header.addEventListener("click", function () {
         this.nextElementSibling.classList.toggle("d-none");
     });
 });
 
-document.querySelectorAll(".apartment button").forEach(btn => {
+// MODAL
+let currentApartment = null;
 
+document.querySelectorAll(".ver-btn").forEach(btn => {
     btn.addEventListener("click", function () {
 
         let apto = this.closest(".apartment");
+        currentApartment = apto;
 
         document.getElementById("mTower").innerText = apto.dataset.tower;
         document.getElementById("mApto").innerText = apto.dataset.apto;
@@ -166,8 +300,66 @@ document.querySelectorAll(".apartment button").forEach(btn => {
         document.getElementById("mStatus").innerText = apto.dataset.status;
 
         new bootstrap.Modal(document.getElementById('detailModal')).show();
+    });
+});
+
+// BUSCADOR INTELIGENTE
+document.getElementById("searchInput").addEventListener("keyup", function () {
+
+    let valor = this.value.toUpperCase().trim();
+    let torresContainer = document.getElementById("towersContainer");
+    let torres = document.querySelectorAll(".tower-card");
+
+    if (valor !== "") {
+        torresContainer.classList.remove("d-none");
+    }
+
+    torres.forEach(torre => {
+
+        let body = torre.querySelector(".apartments");
+        let apartamentos = torre.querySelectorAll(".apartment");
+        let torreTieneCoincidencia = false;
+
+        apartamentos.forEach(apto => {
+
+            let codigo = apto.dataset.apto.toUpperCase();
+
+            if (valor === "" || codigo.includes(valor)) {
+                apto.style.display = "flex";
+                torreTieneCoincidencia = true;
+            } else {
+                apto.style.display = "none";
+            }
+
+        });
+
+        if (valor === "") {
+            torre.style.display = "block";
+            body.classList.add("d-none");
+        } 
+        else if (torreTieneCoincidencia) {
+            torre.style.display = "block";
+            body.classList.remove("d-none");
+        } 
+        else {
+            torre.style.display = "none";
+        }
 
     });
+
+});
+
+// NOTIFICACIÓN SIMULADA
+document.getElementById("sendNotification").addEventListener("click", function () {
+
+    if (!currentApartment) return;
+
+    alert(
+        "Notificación enviada a " +
+        currentApartment.dataset.tenant +
+        " del apartamento " +
+        currentApartment.dataset.apto
+    );
 
 });
 
