@@ -3,242 +3,114 @@
 {% block title %}Control de Pagos{% endblock %}
 
 {% block content %}
-
 <style>
-
 body{
     background: linear-gradient(135deg, #eef2f7, #f8fafc);
 }
-
-h2{
-    font-weight:700;
-    letter-spacing:1px;
-}
-
-.tower-card{
-    border:none;
-    border-radius:14px;
-    transition:0.3s ease;
-}
-
-.tower-card:hover{
-    transform:translateY(-3px);
-}
-
-.tower-header{
-    cursor:pointer;
-    font-weight:600;
-    font-size:18px;
-    background:linear-gradient(90deg,#1e3c72,#2a5298);
-    color:white;
-    border-radius:14px 14px 0 0;
-}
-
-.apartment{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px;
-    border-radius:8px;
-    transition:0.2s ease;
-}
-
-.apartment:hover{
-    background:#f1f5ff;
-}
-
-.tower-info{
-    background:#eef4ff;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:15px;
-    font-size:14px;
-}
-
-#searchInput{
-    border-radius:30px;
-    padding:15px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.05);
-}
-
-#toggleTowers{
-    border-radius:30px;
-    padding:10px 25px;
-    font-weight:600;
-}
-
-.table{
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 6px 20px rgba(0,0,0,0.05);
-}
-
-.table thead{
-    background:linear-gradient(90deg,#1e3c72,#2a5298);
-    color:white;
-}
-
-.modal-content{
-    border-radius:15px;
-    border:none;
-}
-
-.modal-header{
-    border-radius:15px 15px 0 0;
-}
-
-.badge{
-    padding:6px 12px;
-    font-size:13px;
-    border-radius:20px;
-}
-
+h2{ font-weight:700; letter-spacing:1px; }
+.tower-card{ border:none; border-radius:14px; transition:0.3s ease; }
+.tower-card:hover{ transform:translateY(-3px); }
+.tower-header{ cursor:pointer; font-weight:600; font-size:18px; background:linear-gradient(90deg,#1e3c72,#2a5298); color:white; border-radius:14px 14px 0 0; }
+.apartment{ display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:8px; transition:0.2s ease; }
+.apartment:hover{ background:#f1f5ff; }
+.tower-info{ background:#eef4ff; border-radius:10px; padding:12px; margin-bottom:15px; font-size:14px; }
+#searchInput{ border-radius:30px; padding:15px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
+#toggleTowers{ border-radius:30px; padding:10px 25px; font-weight:600; }
+.table{ border-radius:12px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.05); }
+.table thead{ background:linear-gradient(90deg,#1e3c72,#2a5298); color:white; }
+.modal-content{ border-radius:15px; border:none; }
+.modal-header{ border-radius:15px 15px 0 0; }
+.badge{ padding:6px 12px; font-size:13px; border-radius:20px; }
 </style>
 
 <div class="container mt-4">
+    <h2 class="text-center mb-4">Control de Pago de Administración</h2>
 
-<h2 class="text-center mb-4">Control de Pago de Administración</h2>
+    <input 
+        type="text" 
+        id="searchInput" 
+        class="form-control form-control-lg mb-3" 
+        placeholder="Buscar apartamento (Ej: A-101)"
+    >
 
-<input 
-    type="text" 
-    id="searchInput" 
-    class="form-control form-control-lg mb-3" 
-    placeholder="Buscar apartamento (Ej: A-101)"
->
+    <button id="toggleTowers" class="btn btn-primary mb-4">Ver torres</button>
 
-<button id="toggleTowers" class="btn btn-primary mb-4">
-    Ver torres
-</button>
+    <div id="towersContainer" class="d-none">
+        {# Agrupamos por torre en el template #}
+        {% regroup apartamentos by torre as towers %}
+        {% for tower in towers %}
+            <div class="card shadow-sm mb-3 tower-card">
+                <div class="card-header tower-header">{{ tower.grouper }}</div>
+                <div class="card-body apartments d-none">
+                    <div class="tower-info">
+                        <strong>Total aptos:</strong> {{ tower.list|length }}
+                        {# contar morosos y al dia #}
+                        {% with morosos=0 al_dia=0 %}
+                            {% for apto in tower.list %}
+                                {% if apto.al_dia %}{% with al_dia=al_dia|add:1 %}{% endwith %}{% else %}{% with morosos=morosos|add:1 %}{% endwith %}{% endif %}
+                            {% endfor %}
+                            | <strong>Morosos:</strong> {{ morosos }} |
+                            <strong>Al día:</strong> {{ al_dia }}
+                        {% endwith %}
+                    </div>
 
-<div id="towersContainer" class="d-none">
-
-    <!-- TORRE A -->
-    <div class="card shadow-sm mb-3 tower-card">
-        <div class="card-header tower-header">Torre A</div>
-
-        <div class="card-body apartments d-none">
-
-            <div class="tower-info">
-                <strong>Total aptos:</strong> 2 |
-                <strong>Morosos:</strong> 1 |
-                <strong>Al día:</strong> 1
+                    {% for apto in tower.list %}
+                    <div class="apartment"
+                         data-apto="{{ apto.numero }}"
+                         data-tower="{{ apto.torre }}"
+                         data-tenant="{{ apto.tenant }}"
+                         data-balance="{{ apto.deuda|default:'0' }}"
+                         data-months="{{ apto.meses_vencidos|default:'-' }}"
+                         data-status="{% if apto.al_dia %}Al día{% else %}Moroso{% endif %}">
+                        <span>Apto {{ apto.numero }}</span>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
+                            Ver
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-
-            <div class="apartment"
-                 data-apto="A-101"
-                 data-tower="Torre A"
-                 data-tenant="Juan Pérez"
-                 data-balance="250000"
-                 data-months="2"
-                 data-status="Moroso">
-                <span>Apto 101</span>
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
-                    Ver
-                </button>
-            </div>
-
-            <div class="apartment"
-                 data-apto="A-102"
-                 data-tower="Torre A"
-                 data-tenant="Ana Gómez"
-                 data-balance="0"
-                 data-months="0"
-                 data-status="Al día">
-                <span>Apto 102</span>
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
-                    Ver
-                </button>
-            </div>
-
-        </div>
+        {% endfor %}
     </div>
 
-    <!-- TORRE B -->
-    <div class="card shadow-sm mb-3 tower-card">
-        <div class="card-header tower-header">Torre B</div>
+    <h4 class="mt-5 mb-3">Listado Consolidado</h4>
 
-        <div class="card-body apartments d-none">
-
-            <div class="tower-info">
-                <strong>Total aptos:</strong> 2 |
-                <strong>Morosos:</strong> 1 |
-                <strong>Al día:</strong> 1
-            </div>
-
-            <div class="apartment"
-                 data-apto="B-201"
-                 data-tower="Torre B"
-                 data-tenant="Carlos Ruiz"
-                 data-balance="180000"
-                 data-months="1"
-                 data-status="Moroso">
-                <span>Apto 201</span>
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
-                    Ver
-                </button>
-            </div>
-
-            <div class="apartment"
-                 data-apto="B-202"
-                 data-tower="Torre B"
-                 data-tenant="Laura Díaz"
-                 data-balance="0"
-                 data-months="0"
-                 data-status="Al día">
-                <span>Apto 202</span>
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3 ver-btn">
-                    Ver
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-
-<h4 class="mt-5 mb-3">Listado Consolidado</h4>
-
-<table class="table table-bordered table-striped">
-<thead class="table-dark">
-<tr>
-    <th>Torre</th>
-    <th>Apartamento</th>
-    <th>Inquilino</th>
-    <th>Saldo</th>
-    <th>Estado</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-    <td>Torre A</td>
-    <td>101</td>
-    <td>Juan Pérez</td>
-    <td>$250.000</td>
-    <td><span class="badge bg-danger">Moroso</span></td>
-</tr>
-<tr>
-    <td>Torre A</td>
-    <td>102</td>
-    <td>Ana Gómez</td>
-    <td>$0</td>
-    <td><span class="badge bg-success">Al día</span></td>
-</tr>
-<tr>
-    <td>Torre B</td>
-    <td>201</td>
-    <td>Carlos Ruiz</td>
-    <td>$180.000</td>
-    <td><span class="badge bg-danger">Moroso</span></td>
-</tr>
-<tr>
-    <td>Torre B</td>
-    <td>202</td>
-    <td>Laura Díaz</td>
-    <td>$0</td>
-    <td><span class="badge bg-success">Al día</span></td>
-</tr>
-</tbody>
-</table>
+    <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+    <tr>
+        <th>Torre</th>
+        <th>Apartamento</th>
+        <th>Inquilino</th>
+        <th>Saldo</th>
+        <th>Estado</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for apto in apartamentos %}
+    <tr>
+        <td>{{ apto.torre }}</td>
+        <td>{{ apto.numero }}</td>
+        <td>{{ apto.tenant }}</td>
+        <td>
+            {% if apto.deuda is None %}
+                N/D
+            {% else %}
+                ${{ apto.deuda|floatformat:2 }}
+            {% endif %}
+        </td>
+        <td>
+            {% if apto.al_dia %}
+                <span class="badge bg-success">Al día</span>
+            {% else %}
+                <span class="badge bg-danger">Moroso</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-center">No hay apartamentos registrados.</td></tr>
+    {% endfor %}
+    </tbody>
+    </table>
 
 </div>
 
@@ -260,9 +132,7 @@ h2{
     <p><strong>Meses vencidos:</strong> <span id="mMonths"></span></p>
     <p><strong>Estado:</strong> <span id="mStatus"></span></p>
 
-    <button id="sendNotification" class="btn btn-warning w-100 mt-2">
-        Enviar notificación
-    </button>
+    <button id="sendNotification" class="btn btn-warning w-100 mt-2">Enviar notificación</button>
 </div>
 
 </div>
@@ -270,7 +140,6 @@ h2{
 </div>
 
 <script>
-
 // MOSTRAR TORRES
 document.getElementById("toggleTowers").addEventListener("click", function () {
     document.getElementById("towersContainer").classList.toggle("d-none");
@@ -288,16 +157,15 @@ let currentApartment = null;
 
 document.querySelectorAll(".ver-btn").forEach(btn => {
     btn.addEventListener("click", function () {
-
         let apto = this.closest(".apartment");
         currentApartment = apto;
 
-        document.getElementById("mTower").innerText = apto.dataset.tower;
-        document.getElementById("mApto").innerText = apto.dataset.apto;
-        document.getElementById("mTenant").innerText = apto.dataset.tenant;
-        document.getElementById("mBalance").innerText = apto.dataset.balance;
-        document.getElementById("mMonths").innerText = apto.dataset.months;
-        document.getElementById("mStatus").innerText = apto.dataset.status;
+        document.getElementById("mTower").innerText = apto.dataset.tower || '-';
+        document.getElementById("mApto").innerText = apto.dataset.apto || '-';
+        document.getElementById("mTenant").innerText = apto.dataset.tenant || '-';
+        document.getElementById("mBalance").innerText = apto.dataset.balance || '0';
+        document.getElementById("mMonths").innerText = apto.dataset.months || '-';
+        document.getElementById("mStatus").innerText = apto.dataset.status || '-';
 
         new bootstrap.Modal(document.getElementById('detailModal')).show();
     });
@@ -322,7 +190,7 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
 
         apartamentos.forEach(apto => {
 
-            let codigo = apto.dataset.apto.toUpperCase();
+            let codigo = (apto.dataset.apto || "").toUpperCase();
 
             if (valor === "" || codigo.includes(valor)) {
                 apto.style.display = "flex";
@@ -362,7 +230,6 @@ document.getElementById("sendNotification").addEventListener("click", function (
     );
 
 });
-
 </script>
 
 {% endblock %}

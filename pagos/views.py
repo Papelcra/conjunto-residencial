@@ -45,99 +45,64 @@ def notificar_pago(request):
 # =============================
 # ESTADO DE CUENTA (RESIDENTE)
 # =============================
+
 @login_required
-def estado_cuenta(request):
-    if not request.user.es_residente:
-        messages.error(request, "Solo residentes pueden ver su estado de cuenta.")
-        return redirect('home')
+def estado_cuenta(request, apto_id=None):
+        apartamento = Apartamento.objects.first()
+        pagos = Pago.objects.filter(apartamento=apartamento)
+        total_pagado = sum(p.monto for p in pagos if p.estado == 'aprobado')
 
-    apartamento = getattr(request.user, "apartamento", None)
-
-    if not apartamento:
-        messages.error(request, "No tienes apartamento asignado.")
-        return redirect('home')
-
-    pagos = Pago.objects.filter(apartamento=apartamento).order_by('-fecha_pago')
-    total_pagado = sum(p.monto for p in pagos if p.estado == 'aprobado')
-
-    return render(request, "pagos/estado_cuenta.html", {
-        "apartamento": apartamento,
-        "pagos": pagos,
-        "total_pagado": total_pagado
-    })
-
+        return render(request, "estado_cuenta.html", {
+            "apartamento": apartamento,
+            "pagos": pagos,
+            "total_pagado": total_pagado
+        })  
 
 # =============================
 # ESTADO PAGOS (ADMIN)
 # =============================
 @login_required
 def estado_pagos(request):
-    # permisos
     if not (request.user.es_admin or request.user.es_seguridad):
         messages.error(request, "No tienes permiso.")
         return redirect('home')
 
-    # traemos apartamentos (ajusta select_related si tu modelo referencia al usuario)
-    apartamentos_qs = Apartamento.objects.all()
+    hoy = timezone.localdate()
+    apartamentos = Apartamento.objects.all()
 
-    hoy = timezone.localdate()  # usa timezone para compatibilidad
+    estados = []
 
-    apartamentos = []
-    for apto in apartamentos_qs:
-        # pagos aprobados para este apartamento
-        pagos_aprobados = Pago.objects.filter(apartamento=apto, estado='aprobado')
-        total_pagado = sum((p.monto or 0) for p in pagos_aprobados)
+    for apto in apartamentos:
+        # pagos aprobados de ese apartamento
+        pagos_aprobados = Pago.objects.filter(
+            apartamento=apto,
+            estado='aprobado'
+        ).order_by('-fecha_pago')
 
-        # último pago aprobado (si existe)
-        ultimo_aprobado = pagos_aprobados.order_by('-fecha_pago').first()
+        # último pago
+        ultimo_pago = pagos_aprobados.first()
 
-        # cálculo de meses desde último pago (si hay fecha)
-        meses_vencidos = None
-        al_dia = False
-        if ultimo_aprobado and ultimo_aprobado.fecha_pago:
-            last = ultimo_aprobado.fecha_pago
-            meses_vencidos = (hoy.year - last.year) * 12 + (hoy.month - last.month)
-            # regla simple: si hizo pago en el mes actual o el anterior => al día
-            al_dia = meses_vencidos <= 1
+        if ultimo_pago:
+            # diferencia en meses desde último pago
+            meses_deuda = (hoy.year - ultimo_pago.fecha_pago.year) * 12 + (
+                hoy.month - ultimo_pago.fecha_pago.month
+            )
         else:
-            # sin pago aprobado -> moroso
-            meses_vencidos = None
-            al_dia = False
+            # nunca ha pagado
+            meses_deuda = 12  # o el valor que quieras
 
-        # intento obtener el valor de administración si existe (para calcular deuda)
-        valor_admin = getattr(apto, 'valor_admin', None) or getattr(apto, 'valor_mensual', None)
+        al_dia = meses_deuda <= 1
 
-        if valor_admin is not None:
-            # deuda estimada: si valor_admin es por mes y no conocemos meses, simplemente calcular diferencia
-            deuda = max(0, valor_admin - total_pagado)
-        else:
-            deuda = None  # sin dato para calcular deuda
-
-        # nombre de torre / bloque / sector (flexible)
-        torre = getattr(apto, 'torre', None) or getattr(apto, 'bloque', None) or getattr(apto, 'torre_nombre', None) or "N/A"
-        numero = getattr(apto, 'numero', None) or getattr(apto, 'codigo', None) or str(getattr(apto, 'id', ''))
-        # inquilino / residente
-        tenant_obj = getattr(apto, 'residente', None) or getattr(apto, 'arrendatario', None)
-        tenant = str(tenant_obj) if tenant_obj else "Sin asignar"
-
-        apartamentos.append({
-            "id": apto.id,
-            "torre": torre,
-            "numero": numero,
-            "tenant": tenant,
-            "total_pagado": total_pagado,
-            "deuda": deuda,
-            "meses_vencidos": meses_vencidos,
-            "al_dia": al_dia,
+        estados.append({
+            "apartamento": apto,
+            "meses_deuda": max(0, meses_deuda),
+            "al_dia": al_dia
         })
 
-    # puedes ordenar apartamentos si quieres (ej: por torre y número)
-    apartamentos = sorted(apartamentos, key=lambda x: (x['torre'], x['numero']))
-
-    return render(request, "pagos/estado_cuenta.html", {
+    return render(request, "estado_pagos.html", {
+        "estados": estados,
         "apartamentos": apartamentos
     })
-
 
 # =============================
 # VALIDAR PAGOS (ADMIN)
@@ -241,4 +206,4 @@ def registrar_pago(request):
         return redirect('home')
 
     messages.info(request, "Funcionalidad de registro manual en construcción.")
-    return redirect("estado_pagos")
+    return redirect("pagos:estado_pagos")

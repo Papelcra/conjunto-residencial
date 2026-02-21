@@ -10,6 +10,8 @@ urlpatterns = [
     # Todas las rutas nuevas de develop (no se pierde ninguna)
     path("estado-cuenta/", views.estado_cuenta, name="estado_cuenta"),
     path("estado-pagos/", views.estado_pagos, name="estado_pagos"),
+    path("estado-cuenta/", views.estado_cuenta, name="estado_cuenta"),
+    path("estado-cuenta/<int:apto_id>/", views.estado_cuenta, name="estado_cuenta_admin"),
     path("registrar-pago/", views.registrar_pago, name="registrar_pago"),
     path("historial/<int:apto_id>/", views.historial_pagos, name="historial_pagos"),
     path("reporte-pagos/", views.reporte_pagos, name="reporte_pagos"),
