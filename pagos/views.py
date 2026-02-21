@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from .forms import NotificarPagoForm
 from .models import Pago
 from apartamentos.models import Apartamento
+from django.utils import timezone
 
 
 # =============================
@@ -71,26 +72,70 @@ def estado_cuenta(request):
 # =============================
 @login_required
 def estado_pagos(request):
+    # permisos
     if not (request.user.es_admin or request.user.es_seguridad):
         messages.error(request, "No tienes permiso.")
         return redirect('home')
 
-    apartamentos = Apartamento.objects.all()
-    estados = []
+    # traemos apartamentos (ajusta select_related si tu modelo referencia al usuario)
+    apartamentos_qs = Apartamento.objects.all()
 
-    for apto in apartamentos:
-        pagos = Pago.objects.filter(apartamento=apto, estado='aprobado')
-        total_pagado = sum(p.monto for p in pagos)
+    hoy = timezone.localdate()  # usa timezone para compatibilidad
 
-        estados.append({
-            "apartamento": apto,
+    apartamentos = []
+    for apto in apartamentos_qs:
+        # pagos aprobados para este apartamento
+        pagos_aprobados = Pago.objects.filter(apartamento=apto, estado='aprobado')
+        total_pagado = sum((p.monto or 0) for p in pagos_aprobados)
+
+        # último pago aprobado (si existe)
+        ultimo_aprobado = pagos_aprobados.order_by('-fecha_pago').first()
+
+        # cálculo de meses desde último pago (si hay fecha)
+        meses_vencidos = None
+        al_dia = False
+        if ultimo_aprobado and ultimo_aprobado.fecha_pago:
+            last = ultimo_aprobado.fecha_pago
+            meses_vencidos = (hoy.year - last.year) * 12 + (hoy.month - last.month)
+            # regla simple: si hizo pago en el mes actual o el anterior => al día
+            al_dia = meses_vencidos <= 1
+        else:
+            # sin pago aprobado -> moroso
+            meses_vencidos = None
+            al_dia = False
+
+        # intento obtener el valor de administración si existe (para calcular deuda)
+        valor_admin = getattr(apto, 'valor_admin', None) or getattr(apto, 'valor_mensual', None)
+
+        if valor_admin is not None:
+            # deuda estimada: si valor_admin es por mes y no conocemos meses, simplemente calcular diferencia
+            deuda = max(0, valor_admin - total_pagado)
+        else:
+            deuda = None  # sin dato para calcular deuda
+
+        # nombre de torre / bloque / sector (flexible)
+        torre = getattr(apto, 'torre', None) or getattr(apto, 'bloque', None) or getattr(apto, 'torre_nombre', None) or "N/A"
+        numero = getattr(apto, 'numero', None) or getattr(apto, 'codigo', None) or str(getattr(apto, 'id', ''))
+        # inquilino / residente
+        tenant_obj = getattr(apto, 'residente', None) or getattr(apto, 'arrendatario', None)
+        tenant = str(tenant_obj) if tenant_obj else "Sin asignar"
+
+        apartamentos.append({
+            "id": apto.id,
+            "torre": torre,
+            "numero": numero,
+            "tenant": tenant,
             "total_pagado": total_pagado,
-            "deuda": 0,
-            "al_dia": True
+            "deuda": deuda,
+            "meses_vencidos": meses_vencidos,
+            "al_dia": al_dia,
         })
 
-    return render(request, "pagos/estado_pagos.html", {
-        "estados": estados
+    # puedes ordenar apartamentos si quieres (ej: por torre y número)
+    apartamentos = sorted(apartamentos, key=lambda x: (x['torre'], x['numero']))
+
+    return render(request, "pagos/estado_cuenta.html", {
+        "apartamentos": apartamentos
     })
 
 
@@ -105,7 +150,7 @@ def validar_pagos(request):
 
     pagos_pendientes = Pago.objects.filter(estado='pendiente').order_by('-creado_en')
 
-    return render(request, "pagos/validar_pagos.html", {
+    return render(request, "validar_pagos.html", {
         "pagos_pendientes": pagos_pendientes
     })
 
@@ -121,7 +166,7 @@ def aprobar_pago(request, pago_id):
     pago.save()
 
     messages.success(request, "Pago aprobado.")
-    return redirect("validar_pagos")
+    return redirect("pagos:validar_pagos")
 
 
 @login_required
@@ -135,7 +180,7 @@ def rechazar_pago(request, pago_id):
     pago.save()
 
     messages.success(request, "Pago rechazado.")
-    return redirect("validar_pagos")
+    return redirect("pagos:validar_pagos")
 
 
 # =============================
@@ -186,3 +231,14 @@ def reporte_pagos(request):
     response = HttpResponse(texto, content_type="text/plain")
     response["Content-Disposition"] = "attachment; filename=reporte_pagos.txt"
     return response
+# =============================
+# REGISTRAR PAGO (ADMIN)
+# =============================
+@login_required
+def registrar_pago(request):
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden registrar pagos.")
+        return redirect('home')
+
+    messages.info(request, "Funcionalidad de registro manual en construcción.")
+    return redirect("estado_pagos")

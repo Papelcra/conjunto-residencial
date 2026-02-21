@@ -14,7 +14,7 @@
             Registrar Pago
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'registrar_pago' %}">
+            <form method="post" action="{% url 'pagos:registrar_pago' %}">
                 {% csrf_token %}
                 <div class="row">
 
@@ -88,7 +88,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'historial_pagos' e.apartamento.id %}" 
+                            <a href="{% url 'pagos:historial_pagos' e.apartamento.id %}" 
                                class="btn btn-sm btn-outline-primary">
                                 Ver
                             </a>
@@ -103,7 +103,7 @@
 
     <!-- BOTON REPORTE -->
     <div class="mt-3">
-        <a href="{% url 'reporte_pagos' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'pagos:reporte_pagos' %}" class="btn btn-outline-secondary">
             Descargar Reporte TXT
         </a>
     </div>
