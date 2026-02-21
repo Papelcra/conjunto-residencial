@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Control de Pagos{% endblock %}
+{% block title %}Estado de Pagos{% endblock %}
 
 {% block content %}
 
@@ -8,78 +8,32 @@
 
     <h2 class="mb-4">💰 Estado de Pagos de Administración</h2>
 
-    <!-- REGISTRAR PAGO -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            Registrar Pago
-        </div>
-        <div class="card-body">
-            <form method="post" action="{% url 'registrar_pago' %}">
-                {% csrf_token %}
-                <div class="row">
-
-                    <div class="col-md-3">
-                        <label class="form-label">Apartamento</label>
-                        <select name="apartamento" class="form-select" required>
-                            {% for a in apartamentos %}
-                                <option value="{{ a.id }}">
-                                    Apto {{ a.numero }} - {{ a.arrendatario }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">Fecha</label>
-                        <input type="date" name="fecha" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">Valor</label>
-                        <input type="number" name="valor" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">Método</label>
-                        <select name="metodo" class="form-select">
-                            <option>Efectivo</option>
-                            <option>Transferencia</option>
-                            <option>Nequi</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <button class="btn btn-success mt-3">
-                    Registrar Pago
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- TABLA ESTADOS -->
     <div class="card shadow-sm">
         <div class="card-header bg-dark text-white">
             Estado por Apartamento
         </div>
+
         <div class="card-body p-0">
 
-            <table class="table table-striped mb-0">
+            <table class="table table-striped mb-0 align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>Apartamento</th>
                         <th>Arrendatario</th>
-                        <th>Meses en Deuda</th>
+                        <th>Meses en deuda</th>
                         <th>Estado</th>
+                        <th>Estado cuenta</th>
                         <th>Historial</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for e in estados %}
                     <tr>
                         <td>{{ e.apartamento.numero }}</td>
                         <td>{{ e.apartamento.arrendatario }}</td>
                         <td>{{ e.meses_deuda }}</td>
+
                         <td>
                             {% if e.al_dia %}
                                 <span class="badge bg-success">Al día</span>
@@ -87,27 +41,38 @@
                                 <span class="badge bg-danger">Moroso</span>
                             {% endif %}
                         </td>
+
+                        <!-- BOTON ESTADO CUENTA -->
                         <td>
-                            <a href="{% url 'historial_pagos' e.apartamento.id %}" 
-                               class="btn btn-sm btn-outline-primary">
+                            <a href="{% url 'pagos:estado_cuenta_admin' e.apartamento.id %}"
+                               class="btn btn-sm btn-outline-secondary">
                                 Ver
                             </a>
+                        </td>
+
+                        <!-- HISTORIAL -->
+                        <td>
+                            <a href="{% url 'pagos:historial_pagos' e.apartamento.id %}"
+                               class="btn btn-sm btn-outline-primary">
+                                Historial
+                            </a>
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No hay apartamentos registrados.
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
+
             </table>
 
         </div>
     </div>
 
-    <!-- BOTON REPORTE -->
-    <div class="mt-3">
-        <a href="{% url 'reporte_pagos' %}" class="btn btn-outline-secondary">
-            Descargar Reporte TXT
-        </a>
-    </div>
-
 </div>
-{% endblock %}
 
+{% endblock %}

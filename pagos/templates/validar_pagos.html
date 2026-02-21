@@ -16,7 +16,7 @@
             <tr>
                 <th>Residente</th>
                 <th>Apartamento</th>
-                <th>Fecha reporte</th>
+                <th>Fecha pago</th>
                 <th>Valor</th>
                 <th>Comprobante</th>
                 <th>Estado</th>
@@ -25,48 +25,62 @@
         </thead>
 
         <tbody>
-            <!-- PAGO 1 -->
+        {% for pago in pagos_pendientes %}
             <tr>
-                <td>Juan Pérez</td>
-                <td>101</td>
-                <td>2026-02-18</td>
-                <td>$100.000</td>
                 <td>
-                    <button class="btn btn-sm btn-secondary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#comprobanteModal"
-                        data-img="https://via.placeholder.com/400x500?text=Comprobante+101">
-                        Ver
-                    </button>
+                    {{ pago.residente.get_full_name|default:pago.residente.username }}
                 </td>
-                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+
                 <td>
-                    <button class="btn btn-sm btn-success aprobar-btn">Aprobar</button>
-                    <button class="btn btn-sm btn-danger rechazar-btn">Rechazar</button>
+                    {{ pago.apartamento.numero|default:pago.apartamento }}
+                </td>
+
+                <td>
+                    {{ pago.fecha_pago }}
+                </td>
+
+                <td>
+                    ${{ pago.monto|floatformat:2 }}
+                </td>
+
+                <td>
+                    {% if pago.comprobante %}
+                        <button class="btn btn-sm btn-secondary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#comprobanteModal"
+                            data-img="{{ pago.comprobante.url }}">
+                            Ver
+                        </button>
+                    {% else %}
+                        <span class="text-muted">Sin archivo</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <span class="badge bg-warning text-dark">
+                        Pendiente
+                    </span>
+                </td>
+
+                <td>
+                    <a href="{% url 'pagos:aprobar_pago' pago.id %}"
+                       class="btn btn-sm btn-success">
+                        Aprobar
+                    </a>
+
+                    <a href="{% url 'pagos:rechazar_pago' pago.id %}"
+                       class="btn btn-sm btn-danger">
+                        Rechazar
+                    </a>
                 </td>
             </tr>
-
-            <!-- PAGO 2 -->
+        {% empty %}
             <tr>
-                <td>Ana Gómez</td>
-                <td>102</td>
-                <td>2026-02-17</td>
-                <td>$100.000</td>
-                <td>
-                    <button class="btn btn-sm btn-secondary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#comprobanteModal"
-                        data-img="https://via.placeholder.com/400x500?text=Comprobante+102">
-                        Ver
-                    </button>
-                </td>
-                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                <td>
-                    <button class="btn btn-sm btn-success aprobar-btn">Aprobar</button>
-                    <button class="btn btn-sm btn-danger rechazar-btn">Rechazar</button>
+                <td colspan="7" class="text-center">
+                    No hay pagos pendientes.
                 </td>
             </tr>
-
+        {% endfor %}
         </tbody>
     </table>
 
@@ -93,28 +107,10 @@
 <script>
 document.addEventListener("DOMContentLoaded", function(){
 
-    // mostrar comprobante
+    // cargar comprobante en modal
     document.querySelectorAll("[data-img]").forEach(btn=>{
         btn.addEventListener("click", function(){
             document.getElementById("comprobanteImg").src = this.dataset.img;
-        });
-    });
-
-    // aprobar
-    document.querySelectorAll(".aprobar-btn").forEach(btn=>{
-        btn.addEventListener("click", function(){
-            let row = this.closest("tr");
-            row.querySelector("span").className = "badge bg-success";
-            row.querySelector("span").innerText = "Aprobado";
-        });
-    });
-
-    // rechazar
-    document.querySelectorAll(".rechazar-btn").forEach(btn=>{
-        btn.addEventListener("click", function(){
-            let row = this.closest("tr");
-            row.querySelector("span").className = "badge bg-danger";
-            row.querySelector("span").innerText = "Rechazado";
         });
     });
 

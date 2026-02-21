@@ -144,6 +144,11 @@ LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
+LANGUAGES = [
+    ('es-co', 'Spanish (Colombia)'),
+]
+
+LANGUAGES_BIDI = []
 
 ADMIN_SITE_HEADER = "Gestión del Conjunto Residencial"
 ADMIN_INDEX_TITLE = "Panel de Administración"
