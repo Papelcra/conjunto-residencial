@@ -3,31 +3,60 @@
 {% block title %}Dashboard Seguridad{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Panel de Seguridad</h1>
-    <div class="alert alert-info">
+
+<div class="container py-5">
+
+    <h2 class="mb-4 fw-bold text-center">Panel de Seguridad</h2>
+
+    <div class="alert alert-info shadow-sm text-center">
         Bienvenido, {{ user.get_full_name|default:user.username }}
     </div>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5>Reservas del día</h5>
-                    <p>Verifica zonas comunes hoy</p>
-                    <a href="#" class="btn btn-primary">Ver reservas</a>
+
+    <!-- TARJETAS CENTRADAS -->
+    <div class="row g-4 justify-content-center mt-2">
+
+        <!-- RESERVAS DEL DIA -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
+                <div class="card-body d-flex flex-column justify-content-center">
+
+                    <div class="icon-circle bg-primary text-white mb-4">
+                        <i class="bi bi-calendar-day fs-1"></i>
+                    </div>
+
+                    <h5 class="card-title">Reservas del día</h5>
+                    <p class="text-muted small">Verifica zonas comunes hoy</p>
+
+                    <a href="#" class="btn btn-primary mt-auto">
+                        Ver reservas
+                    </a>
+
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5>Lista de residentes</h5>
-                    <p>Consulta información rápida</p>
-                    <a href="#" class="btn btn-primary">Ver residentes</a>
+
+        <!-- LISTA RESIDENTES -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
+                <div class="card-body d-flex flex-column justify-content-center">
+
+                    <div class="icon-circle bg-secondary text-white mb-4">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+
+                    <h5 class="card-title">Lista de residentes</h5>
+                    <p class="text-muted small">Consulta información rápida</p>
+
+                    <a href="#" class="btn btn-secondary mt-auto">
+                        Ver residentes
+                    </a>
+
                 </div>
             </div>
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}
