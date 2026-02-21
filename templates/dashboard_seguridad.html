@@ -29,5 +29,21 @@
             </div>
         </div>
     </div>
+
+        <!-- Gestion de Residentes -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-4">
+                <div class="mb-3">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <h5>Arrendatarios</h5>
+                <p>Gestión y estado de residentes arrendados</p>
+                <a href="{% url 'arrendatarios:lista' %}" class="btn btn-primary">
+                    Ver arrendatarios
+                </a>
+            </div>
+        </div>
 </div>
+
+
 {% endblock %}

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # Tus aplicaciones
     'usuarios',  # ← solo una vez
     'apartamentos',
+    'arrendatarios',
     'pagos',
     'reservas',
     'pqrs',
