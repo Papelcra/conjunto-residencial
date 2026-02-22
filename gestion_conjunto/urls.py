@@ -47,6 +47,7 @@ urlpatterns = [
     path('apartamentos/', include('apartamentos.urls')),
     path('pagos/', include('pagos.urls')),
     path('usuarios/', include('usuarios.urls')),
+    path('reservas/', include('reservas.urls')),
 ]
 
 # 👇 ESTA PARTE ES LA QUE HACE QUE SE VEAN LAS IMÁGENES SUBIDAS

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Zona{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Editar Zona: {{ zona.nombre }}</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" class="form-control" value="{{ zona.nombre }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Capacidad máxima</label>
+                        <input type="number" name="capacidad" class="form-control" value="{{ zona.capacidad }}" min="1" required>
+                    </div>
+                    <div class="col-12">
+                        <label>Descripción</label>
+                        <textarea name="descripcion" class="form-control" rows="4">{{ zona.descripcion }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input type="checkbox" name="disponible" id="disponible" class="form-check-input" {% if zona.disponible %}checked{% endif %}>
+                            <label class="form-check-label" for="disponible">Disponible</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Guardar cambios</button>
+                        <a href="{% url 'reservas:gestionar_zonas' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

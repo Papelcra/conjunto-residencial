@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Gestionar Horarios de {{ zona.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Gestionar Horarios - {{ zona.nombre }}</h2>
+
+    <!-- Formulario para agregar nuevo horario -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-primary text-white">
+            Agregar Nuevo Horario
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>Día de la semana</label>
+                        <select name="dia_semana" class="form-control" required>
+                            <option value="lunes">Lunes</option>
+                            <option value="martes">Martes</option>
+                            <option value="miercoles">Miércoles</option>
+                            <option value="jueves">Jueves</option>
+                            <option value="viernes">Viernes</option>
+                            <option value="sabado">Sábado</option>
+                            <option value="domingo">Domingo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Hora inicio</label>
+                        <input type="time" name="hora_inicio" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Hora fin</label>
+                        <input type="time" name="hora_fin" class="form-control" required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Agregar Horario</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de horarios -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            Horarios Existentes
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Hora inicio</th>
+                        <th>Hora fin</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for horario in horarios %}
+                        <tr>
+                            <td>{{ horario.dia_semana|capfirst }}</td>
+                            <td>{{ horario.hora_inicio }}</td>
+                            <td>{{ horario.hora_fin }}</td>
+                            <td>
+                                <a href="{% url 'reservas:editar_horario' horario.id %}" class="btn btn-sm btn-warning">Editar</a>
+                                <a href="{% url 'reservas:eliminar_horario' horario.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este horario?')">Eliminar</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No hay horarios registrados para esta zona.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'reservas:gestionar_zonas' %}" class="btn btn-secondary mt-4">Volver a Zonas</a>
+</div>
+{% endblock %}

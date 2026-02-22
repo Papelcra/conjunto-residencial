@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Gestionar Zonas Comunes{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Gestionar Zonas Comunes</h2>
+
+    <!-- Formulario para crear nueva zona -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-primary text-white">
+            Crear Nueva Zona
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Capacidad máxima</label>
+                        <input type="number" name="capacidad" class="form-control" min="1" value="1" required>
+                    </div>
+                    <div class="col-12">
+                        <label>Descripción</label>
+                        <textarea name="descripcion" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input type="checkbox" name="disponible" id="disponible" class="form-check-input" checked>
+                            <label class="form-check-label" for="disponible">Disponible</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Crear Zona</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de zonas -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            Zonas Existentes
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Capacidad</th>
+                        <th>Disponible</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for zona in zonas %}
+                        <tr>
+                            <td>{{ zona.nombre }}</td>
+                            <td>{{ zona.descripcion|truncatewords:10 }}</td>
+                            <td>{{ zona.capacidad }}</td>
+                            <td>
+                                {% if zona.disponible %}
+                                    <span class="badge bg-success">Sí</span>
+                                {% else %}
+                                    <span class="badge bg-danger">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'reservas:editar_zona' zona.id %}" class="btn btn-sm btn-warning">Editar</a>
+                                <a href="{% url 'reservas:eliminar_zona' zona.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres eliminar esta zona?')">Eliminar</a>
+                                <!-- BOTÓN NUEVO: Gestionar Horarios -->
+                                <a href="{% url 'reservas:gestionar_horarios' zona.id %}" class="btn btn-sm btn-info">
+                                    Horarios
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No hay zonas registradas.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Volver al Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Validar Reservas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Reservas Pendientes</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Residente</th>
+                <th>Zona</th>
+                <th>Horario</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reserva in reservas_pendientes %}
+                <tr>
+                    <td>{{ reserva.residente.get_full_name }}</td>
+                    <td>{{ reserva.horario.zona.nombre }}</td>
+                    <td>{{ reserva.horario }}</td>
+                    <td>{{ reserva.fecha }}</td>
+                    <td>
+                        <a href="{% url 'reservas:aprobar_reserva' reserva.id %}" class="btn btn-success btn-sm">Aprobar</a>
+                        <a href="{% url 'reservas:rechazar_reserva' reserva.id %}" class="btn btn-danger btn-sm">Rechazar</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No hay reservas pendientes.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
