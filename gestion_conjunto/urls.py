@@ -47,7 +47,11 @@ urlpatterns = [
     path('apartamentos/', include('apartamentos.urls')),
     path('pagos/', include('pagos.urls')),
     path('usuarios/', include('usuarios.urls')),
+<<<<<<< HEAD
     path('reservas/', include('reservas.urls')),
+=======
+    path('pqrs/', include('pqrs.urls')),
+>>>>>>> 7f57050 (Implementación módulo PQRS y control de roles)
 ]
 
 # 👇 ESTA PARTE ES LA QUE HACE QUE SE VEAN LAS IMÁGENES SUBIDAS

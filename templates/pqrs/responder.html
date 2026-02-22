@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white fw-bold">
+                    Responder PQRS
+                </div>
+
+                <div class="card-body">
+                    <p><strong>Radicado:</strong> {{ pqrs.radicado }}</p>
+                    <p><strong>Tipo:</strong> {{ pqrs.get_tipo_display }}</p>
+                    <p><strong>Asunto:</strong> {{ pqrs.asunto }}</p>
+                    <p><strong>Descripción:</strong></p>
+                    <p class="text-muted">{{ pqrs.descripcion }}</p>
+
+                    <hr>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Respuesta</label>
+                            <textarea
+                                name="respuesta"
+                                class="form-control"
+                                rows="4"
+                                required
+                            >{{ pqrs.respuesta }}</textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-danger">
+                                Guardar respuesta
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
