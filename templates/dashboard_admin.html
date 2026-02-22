@@ -32,6 +32,33 @@
             </div>
         </div>
 
+        <!-- Gestión de Arrendatarios -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    
+                    <div class="icon-circle bg-primary text-white mb-4">
+                        <i class="bi bi-people-fill fs-1"></i>
+                    </div>
+                    
+                    <h5 class="card-title">Arrendatarios</h5>
+                    
+                    <p class="text-muted small">
+                        Gestión y estado de residentes arrendados
+                    </p>
+                    
+                    <a href="{% url 'arrendatarios:lista' %}" class="btn btn-primary mt-auto">
+                        Administrar arrendatarios
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        
+
+
+
         <!-- Pagos y morosidad -->
         
         <div class="col-lg-3 col-md-6">

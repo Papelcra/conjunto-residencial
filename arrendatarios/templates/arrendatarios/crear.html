@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-body">
+
+            <h3 class="mb-4">Asignar Arrendatario</h3>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Apartamento</label>
+                    <select name="apartamento" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                        {% for apto in apartamentos %}
+                            <option value="{{ apto.id }}">
+                                {{ apto.identificador }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Residente</label>
+                    <select name="residente" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                        {% for user in residentes %}
+                            <option value="{{ user.id }}">
+                                {{ user.get_full_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'arrendatarios:lista' %}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        Guardar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

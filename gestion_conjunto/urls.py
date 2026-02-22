@@ -39,6 +39,9 @@ urlpatterns = [
     # Ruta raíz
     path('', dashboard, name='home'),
 
+    # arrendatarios
+    path('arrendatarios/', include('arrendatarios.urls')),
+
     # Apps
     path('', include('core.urls')),
     path('apartamentos/', include('apartamentos.urls')),
