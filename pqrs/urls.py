@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = "pqrs"
+
 urlpatterns = [
     path('admin/', views.listar_pqrs, name='listar_pqrs'),
     path('crear/', views.crear_pqrs, name='crear_pqrs'),

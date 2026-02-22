@@ -27,7 +27,7 @@ def crear_pqrs(request):
             descripcion=descripcion
         )
 
-        return redirect('mis_pqrs')  
+        return redirect('pqrs:mis_pqrs')  
 
     return render(request, 'pqrs/crear.html')
 
@@ -41,7 +41,7 @@ def responder_pqrs(request, id):
         pqrs.respuesta = respuesta
         pqrs.estado = 'RESPONDIDO'
         pqrs.save()
-        return redirect('listar_pqrs')
+        return redirect('pqrs:listar_pqrs')
 
     return render(request, 'pqrs/responder.html', {'pqrs': pqrs})
 from django.contrib.auth.decorators import login_required
@@ -52,7 +52,7 @@ from .models import PQRS
 @solo_roles('residente')
 def mis_pqrs(request):
     pqrs = PQRS.objects.filter(usuario=request.user).order_by('-fecha_creacion')
-    return render(request, 'pqrs/mis_pqrs.html', {'pqrs': pqrs})
+    return render(request, 'pqrs/mis.html', {'pqrs': pqrs})
 @login_required
 @solo_roles('admin')
 def eliminar_pqrs(request, id):
@@ -61,11 +61,11 @@ def eliminar_pqrs(request, id):
     # Regla: solo se pueden eliminar las respondidas
     if pqrs.estado != 'RESPONDIDO':
         messages.error(request, 'Solo se pueden eliminar PQRS respondidas')
-        return redirect('listar_pqrs')
+        return redirect('pqrs:listar_pqrs')
 
     if request.method == 'POST':
         pqrs.delete()
         messages.success(request, 'PQRS eliminada correctamente')
-        return redirect('listar_pqrs')
+        return redirect('pqrs:listar_pqrs')
 
     return render(request, 'pqrs/eliminar.html', {'pqrs': pqrs})

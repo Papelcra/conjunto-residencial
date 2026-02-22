@@ -28,6 +28,7 @@ def dashboard(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
 
     # Autenticación
     path('accounts/login/', auth_views.LoginView.as_view(
@@ -46,7 +47,9 @@ urlpatterns = [
     path('', include('core.urls')),
     path('apartamentos/', include('apartamentos.urls')),
     path('pagos/', include('pagos.urls')),
-    path('usuarios/', include('usuarios.urls'))
+    path('usuarios/', include('usuarios.urls')),
+    path('reservas/', include('reservas.urls')),
+    path('pqrs/', include('pqrs.urls')),
 ]
 
 # 👇 ESTA PARTE ES LA QUE HACE QUE SE VEAN LAS IMÁGENES SUBIDAS

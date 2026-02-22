@@ -41,13 +41,13 @@
 
                     {% if request.user.rol == 'admin' %}
     <div class="btn-group">
-        <a href="{% url 'responder_pqrs' p.id %}"
+        <a href="{% url 'pqrs:responder_pqrs' p.id %}"
            class="btn btn-sm btn-outline-primary">
             Responder
         </a>
 
         {% if p.estado == 'RESPONDIDO' %}
-            <a href="{% url 'eliminar_pqrs' p.id %}"
+            <a href="{% url 'pqrs:eliminar_pqrs' p.id %}"
                class="btn btn-sm btn-outline-danger"
                onclick="return confirm('¿Seguro que deseas eliminar esta PQRS?')">
                 Eliminar
