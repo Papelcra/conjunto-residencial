@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
-
+from usuarios.models import Usuario
 from apartamentos.models import Apartamento
 from pagos.models import Pago
 from django.contrib import messages
@@ -50,7 +50,6 @@ def lista_arrendatarios(request):
 # ==========================================
 # ➕ CREAR ARRENDATARIO
 # ==========================================
-
 @login_required
 @user_passes_test(es_admin)
 def crear_arrendatario(request):
@@ -67,7 +66,9 @@ def crear_arrendatario(request):
         messages.success(request, "Arrendatario asignado correctamente.")
         return redirect("arrendatarios:lista")
 
-    apartamentos = Apartamento.objects.filter(estado="disponible")
+    # CORRECCIÓN: usa 'desocupado' en lugar de "disponible"
+    apartamentos = Apartamento.objects.filter(estado="desocupado")
+
     residentes = User.objects.filter(rol="residente")
 
     return render(request, "arrendatarios/crear.html", {
@@ -87,18 +88,25 @@ def editar_arrendatario(request, id):
 
     if request.method == "POST":
         residente_id = request.POST.get("residente")
-        residente = get_object_or_404(User, id=residente_id)
+        if residente_id:
+            residente = get_object_or_404(User, id=residente_id)
+            apartamento.ocupante_actual = residente
+            # Opcional: cambia el estado a 'arrendado' si no lo está
+            if apartamento.estado != 'arrendado':
+                apartamento.estado = 'arrendado'
+            apartamento.save()
+            messages.success(request, f"Arrendatario actualizado para {apartamento.identificador}.")
+            return redirect("arrendatarios:lista")
+        else:
+            messages.error(request, "Debe seleccionar un residente.")
 
-        apartamento.ocupante_actual = residente
-        apartamento.save()
-        messages.warning(request, "Arrendatario actualizado correctamente.")
-        return redirect("arrendatarios:lista")
-
-    residentes = User.objects.filter(rol="residente")
+    # Carga todos los residentes disponibles (puedes filtrar si quieres)
+    residentes = User.objects.filter(rol="residente").order_by('first_name', 'last_name')
 
     return render(request, "arrendatarios/editar.html", {
         "apartamento": apartamento,
-        "residentes": residentes
+        "residentes": residentes,
+        "residente_actual": apartamento.ocupante_actual,  # para pre-seleccionar
     })
 
 
@@ -121,3 +129,31 @@ def eliminar_arrendatario(request, id):
     return render(request, "arrendatarios/eliminar.html", {
         "apartamento": apartamento
     })
+
+
+@login_required
+def lista(request):
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden ver esta lista.")
+        return redirect('home')
+
+    # Muestra TODOS los residentes que tengan apartamento en estado 'arrendado'
+    # (o cambia el filtro si quieres ver todos los residentes)
+    data = Usuario.objects.filter(
+        rol='residente',
+        apartamentos_ocupados__estado='arrendado'  # ← solo arrendados
+    ).select_related('apartamentos_ocupados').order_by('apartamentos_ocupados__identificador')
+
+    # Si quieres TODOS los residentes (incluso sin apartamento)
+    # data = Usuario.objects.filter(rol='residente').select_related('apartamentos_ocupados').order_by('username')
+
+    # Para el buscador por apartamento
+    buscar = request.GET.get('buscar')
+    if buscar:
+        data = data.filter(apartamentos_ocupados__identificador__icontains=buscar)
+
+    context = {
+        'data': data,
+    }
+
+    return render(request, 'arrendatarios/lista.html', context)

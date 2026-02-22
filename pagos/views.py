@@ -271,3 +271,40 @@ def registrar_pago(request):
 
     messages.info(request, "Funcionalidad de registro manual en construcción.")
     return redirect("pagos:estado_pagos")
+
+@login_required
+def lista_morosos(request):
+    if not (request.user.es_admin or request.user.es_seguridad):
+        messages.error(request, "No tienes permiso para ver residentes en mora.")
+        return redirect('home')
+
+    # Lógica de morosidad (usa la misma que en estado_pagos)
+    hoy = timezone.localdate()
+    apartamentos = Apartamento.objects.all()
+
+    morosos = []
+    for apto in apartamentos:
+        pagos_aprobados = Pago.objects.filter(
+            apartamento=apto,
+            estado='aprobado'
+        ).order_by('-fecha_pago')
+
+        ultimo_pago = pagos_aprobados.first()
+
+        if ultimo_pago:
+            meses_deuda = (hoy.year - ultimo_pago.fecha_pago.year) * 12 + (
+                hoy.month - ultimo_pago.fecha_pago.month
+            )
+        else:
+            meses_deuda = 12  # Ajusta si quieres otro valor
+
+        if meses_deuda > 1:  # Moroso si debe más de 1 mes
+            morosos.append({
+                "apartamento": apto,
+                "meses_deuda": max(0, meses_deuda),
+                "residente": apto.ocupante_actual
+            })
+
+    return render(request, "pagos/lista_morosos.html", {
+        "morosos": morosos
+    })

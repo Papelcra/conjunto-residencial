@@ -11,15 +11,23 @@
                 {% csrf_token %}
 
                 <div class="mb-3">
-                    <label class="form-label">Apartamento</label>
-                    <select name="apartamento" class="form-select" required>
-                        <option value="">Seleccione...</option>
-                        {% for apto in apartamentos %}
-                            <option value="{{ apto.id }}">
-                                {{ apto.identificador }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                    <label for="apartamento" class="form-label">Apartamento</label>
+                    <select name="apartamento" id="apartamento" class="form-select" required>
+                    <option value="">Seleccione un apartamento...</option>
+                    {% for apto in apartamentos %}
+                        <option value="{{ apto.id }}"
+                                {% if apto.estado == 'desocupado' %}class="text-success"{% endif %}
+                                {% if apto.estado == 'en_venta' %}class="text-info"{% endif %}
+                                {% if apto.estado == 'en_obra_mantenimiento' %}class="text-warning"{% endif %}>
+                            {{ apto.identificador }}
+                            {% if apto.bloque_o_torre %} - {{ apto.bloque_o_torre }}{% endif %}
+                            {% if apto.piso %} (Piso {{ apto.piso }}){% endif %}
+                            - {{ apto.get_estado_display }}
+                        </option>
+                    {% empty %}
+                        <option value="">No hay apartamentos disponibles</option>
+                    {% endfor %}
+                </select>
                 </div>
 
                 <div class="mb-3">

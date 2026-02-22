@@ -30,4 +30,5 @@ urlpatterns = [
     path('registrar-pago/', views.registrar_pago, name='registrar_pago'),
     path('estado-cuenta-admin/<int:apto_id>/', views.estado_cuenta_admin, name='estado_cuenta_admin'),
     path('morosidad/', views.morosidad, name='morosidad'),
+    path('morosos/', views.lista_morosos, name='lista_morosos'),
 ]

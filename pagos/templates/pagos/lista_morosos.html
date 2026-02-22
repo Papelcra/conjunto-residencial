@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Residentes en Mora{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Apartamentos en Mora</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Apartamento</th>
+                        <th>Torre/Bloque</th>
+                        <th>Residente</th>
+                        <th>Meses en Deuda</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for moroso in morosos %}
+                        <tr>
+                            <td>{{ moroso.apartamento.identificador }}</td>
+                            <td>{{ moroso.apartamento.bloque_o_torre|default:"-" }}</td>
+                            <td>
+                                {% if moroso.residente %}
+                                    {{ moroso.residente.get_full_name|default:moroso.residente.username }}
+                                {% else %}
+                                    Sin residente
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-danger">{{ moroso.meses_deuda }}</span>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No hay apartamentos en mora.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Volver al Dashboard</a>
+</div>
+{% endblock %}

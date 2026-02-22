@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Residentes{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Lista de Residentes</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apartamento</th>
+                        <th>Teléfono</th>
+                        <th>Documento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for residente in residentes %}
+                        <tr>
+                            <td>{{ residente.get_full_name|default:residente.username }}</td>
+                            <td>
+                                {% if residente.apartamento %}
+                                    <span class="badge bg-info">
+                                        {{ residente.apartamento.identificador }}
+                                        {% if residente.apartamento.bloque_o_torre %}
+                                            - {{ residente.apartamento.bloque_o_torre }}
+                                        {% endif %}
+                                    </span>
+                                    {% if residente.apartamento.estado %}
+                                        <span class="badge bg-secondary ms-1">{{ residente.apartamento.get_estado_display }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">No asignado</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ residente.telefono|default:"No registrado" }}</td>
+                            <td>{{ residente.documento|default:"No registrado" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No hay residentes registrados.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Volver al Dashboard</a>
+</div>
+{% endblock %}

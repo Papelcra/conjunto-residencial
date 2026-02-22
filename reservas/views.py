@@ -256,3 +256,17 @@ def lista_reservas_admin(request):
     return render(request, 'reservas/lista_reservas_admin.html', {
         'reservas': reservas
     })
+
+@login_required
+def lista_reservas_hoy(request):
+    if not (request.user.es_seguridad or request.user.es_admin):
+        messages.error(request, "No tienes permiso para ver reservas del día.")
+        return redirect('home')
+
+    hoy = timezone.localdate()
+    reservas_hoy = Reserva.objects.filter(fecha=hoy).order_by('horario__hora_inicio')
+
+    return render(request, 'reservas/lista_reservas_hoy.html', {
+        'reservas_hoy': reservas_hoy,
+        'hoy': hoy
+    })

@@ -17,4 +17,5 @@ urlpatterns = [
     path('eliminar-horario/<int:horario_id>/', views.eliminar_horario, name='eliminar_horario'),
     path('gestionar-horarios/<int:zona_id>/', views.gestionar_horarios, name='gestionar_horarios'),
     path('lista-reservas-admin/', views.lista_reservas_admin, name='lista_reservas_admin'),
+    path('reservas-hoy/', views.lista_reservas_hoy, name='lista_reservas_hoy'),
 ]

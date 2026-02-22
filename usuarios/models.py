@@ -32,3 +32,16 @@ class Usuario(AbstractUser):
     @property
     def es_residente(self):
         return self.rol == 'residente'
+    
+    @property
+    def apartamento(self):
+        """
+        Devuelve el apartamento donde este usuario es el ocupante_actual.
+        Retorna None si no tiene apartamento asignado.
+        """
+        try:
+            return self.apartamentos_ocupados.first()
+        except AttributeError:
+            return None
+    
+

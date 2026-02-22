@@ -18,7 +18,7 @@
     <form method="get" class="row mb-3">
         <div class="col-md-4">
             <input type="text" name="buscar" class="form-control"
-                   placeholder="Buscar por apartamento">
+                   placeholder="Buscar por apartamento" value="{{ request.GET.buscar }}">
         </div>
         <div class="col-md-2">
             <button type="submit" class="btn btn-primary w-100">
@@ -37,6 +37,7 @@
                             <th>Apartamento</th>
                             <th>Residente</th>
                             <th>Estado de Pago</th>
+                            <th>Estado Vivienda</th>
 
                             <!-- Columna solo para admin -->
                             {% if request.user.is_superuser %}
@@ -47,8 +48,25 @@
                     <tbody>
                         {% for item in data %}
                         <tr>
-                            <td>{{ item.apartamento.identificador }}</td>
-                            <td>{{ item.residente.get_full_name }}</td>
+                            <td>
+                                {% if item.apartamento %}
+                                    <strong>{{ item.apartamento.identificador }}</strong>
+                                    {% if item.apartamento.bloque_o_torre %}
+                                        <br><small class="text-muted">- {{ item.apartamento.bloque_o_torre }}</small>
+                                    {% endif %}
+                                    {% if item.apartamento.piso %}
+                                        <br><small class="text-muted">(Piso {{ item.apartamento.piso }})</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">Sin apartamento asignado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ item.residente.get_full_name|default:item.residente.username }}
+                                {% if item.residente.telefono %}
+                                    <br><small class="text-muted">Tel: {{ item.residente.telefono }}</small>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if item.estado_pago == "aprobado" %}
                                     <span class="badge bg-success">Al día</span>
@@ -58,8 +76,17 @@
                                     <span class="badge bg-danger">Rechazado</span>
                                 {% else %}
                                     <span class="badge bg-secondary">
-                                        {{ item.estado_pago }}
+                                        {{ item.estado_pago|default:"Sin datos" }}
                                     </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.apartamento and item.apartamento.estado %}
+                                    <span class="badge bg-info">
+                                        {{ item.apartamento.get_estado_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Sin estado</span>
                                 {% endif %}
                             </td>
 
@@ -81,7 +108,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="text-center">
+                            <td colspan="5" class="text-center py-4">
                                 No hay arrendatarios registrados.
                             </td>
                         </tr>
