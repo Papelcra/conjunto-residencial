@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Apartamentos en Mora{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2 class="mb-4">⚠️ Apartamentos en Mora</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+            Apartamentos con deuda de administración
+        </div>
+
+        <div class="card-body p-0">
+
+            <table class="table table-striped mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Torre / Bloque</th>
+                        <th>Apartamento</th>
+                        <th>Residente</th>
+                        <th>Meses de deuda</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for e in morosos %}
+                    <tr>
+
+                        <!-- TORRE -->
+                        <td>
+                            {% if e.apartamento.bloque_o_torre %}
+                                {{ e.apartamento.bloque_o_torre }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- APARTAMENTO -->
+                        <td>
+                            {{ e.apartamento.identificador }}
+                        </td>
+
+                        <!-- RESIDENTE -->
+                        <td>
+                            {% if e.usuario %}
+                                {{ e.usuario.get_full_name|default:e.usuario.username }}
+                            {% else %}
+                                <span class="text-muted">Sin residente</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- MESES -->
+                        <td>
+                            <span class="badge bg-danger">
+                                {{ e.meses_deuda }} mes(es)
+                            </span>
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No hay apartamentos en mora 🎉
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

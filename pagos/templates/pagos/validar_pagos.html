@@ -45,12 +45,12 @@
 
                 <td>
                     {% if pago.comprobante %}
-                        <button class="btn btn-sm btn-secondary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#comprobanteModal"
-                            data-img="{{ pago.comprobante.url }}">
-                            Ver
-                        </button>
+                        <!-- AHORA SE ABRE DIRECTO EN OTRA PESTAÑA -->
+                        <a href="{{ pago.comprobante.url }}"
+                           target="_blank"
+                           class="btn btn-sm btn-secondary">
+                           Ver comprobante
+                        </a>
                     {% else %}
                         <span class="text-muted">Sin archivo</span>
                     {% endif %}
@@ -85,36 +85,4 @@
     </table>
 
 </div>
-
-<!-- MODAL COMPROBANTE -->
-<div class="modal fade" id="comprobanteModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Comprobante de Pago</h5>
-        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body text-center">
-        <img id="comprobanteImg" src="" class="img-fluid rounded shadow">
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    // cargar comprobante en modal
-    document.querySelectorAll("[data-img]").forEach(btn=>{
-        btn.addEventListener("click", function(){
-            document.getElementById("comprobanteImg").src = this.dataset.img;
-        });
-    });
-
-});
-</script>
-
 {% endblock %}

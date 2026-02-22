@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Estado de Pagos{% endblock %}
+{% block title %}Pagos{% endblock %}
 
 {% block content %}
 
 <div class="container py-4">
 
-    <h2 class="mb-4">💰 Estado de Pagos de Administración</h2>
+    <h2 class="mb-4">Estado General de Pagos</h2>
 
     <div class="card shadow-sm">
         <div class="card-header bg-dark text-white">
-            Estado por Apartamento
+            Todos los Apartamentos
         </div>
 
         <div class="card-body p-0">
@@ -19,30 +19,38 @@
                 <thead class="table-light">
                     <tr>
                         <th>Apartamento</th>
-                        <th>Arrendatario</th>
+                        <th>Residente</th>
                         <th>Meses en deuda</th>
                         <th>Estado</th>
-                        <th>Estado cuenta</th>
+                        <th>Estado de cuenta</th>
                         <th>Historial</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {% for e in estados %}
+                    {% for e in data %}
                     <tr>
-                        <td>{{ e.apartamento.numero }}</td>
-                        <td>{{ e.apartamento.arrendatario }}</td>
+
+                        <td>{{ e.apartamento.identificador }}</td>
+
+                        <td>
+                            {% if e.apartamento.ocupante_actual %}
+                                {{ e.apartamento.ocupante_actual.get_full_name|default:e.apartamento.ocupante_actual.username }}
+                            {% else %}
+                                <span class="text-muted">Sin residente</span>
+                            {% endif %}
+                        </td>
+
                         <td>{{ e.meses_deuda }}</td>
 
                         <td>
-                            {% if e.al_dia %}
+                            {% if e.meses_deuda == 0 %}
                                 <span class="badge bg-success">Al día</span>
                             {% else %}
                                 <span class="badge bg-danger">Moroso</span>
                             {% endif %}
                         </td>
 
-                        <!-- BOTON ESTADO CUENTA -->
                         <td>
                             <a href="{% url 'pagos:estado_cuenta_admin' e.apartamento.id %}"
                                class="btn btn-sm btn-outline-secondary">
@@ -50,7 +58,6 @@
                             </a>
                         </td>
 
-                        <!-- HISTORIAL -->
                         <td>
                             <a href="{% url 'pagos:historial_pagos' e.apartamento.id %}"
                                class="btn btn-sm btn-outline-primary">

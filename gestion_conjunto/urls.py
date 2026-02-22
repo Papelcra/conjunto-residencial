@@ -5,13 +5,17 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from core.views import CustomLogoutView
 
-# Vista del dashboard dinámico por rol (CORREGIDA)
+# 👇 IMPORTANTE: importar esto para servir archivos media
+from django.conf import settings
+from django.conf.urls.static import static
+
+
+# Vista del dashboard dinámico por rol
 @login_required
 def dashboard(request):
     # Recargar el usuario desde la base de datos (evita caché vieja)
     request.user.refresh_from_db()
 
-    # Usar el campo rol directamente (más confiable que solo is_superuser)
     if request.user.rol == 'admin':
         template = 'dashboard_admin.html'
     elif request.user.rol == 'seguridad':
@@ -21,12 +25,15 @@ def dashboard(request):
 
     return render(request, template, {'user': request.user})
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Autenticación
-    path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    
+    path('accounts/login/', auth_views.LoginView.as_view(
+        template_name='registration/login.html'
+    ), name='login'),
+
     path('accounts/logout/', CustomLogoutView.as_view(), name='logout'),
 
     # Ruta raíz
@@ -38,3 +45,7 @@ urlpatterns = [
     path('pagos/', include('pagos.urls')),
     path('usuarios/', include('usuarios.urls')),
 ]
+
+# 👇 ESTA PARTE ES LA QUE HACE QUE SE VEAN LAS IMÁGENES SUBIDAS
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,10 +2,60 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse
+from django.utils import timezone
+
 from .forms import NotificarPagoForm
 from .models import Pago
 from apartamentos.models import Apartamento
-from django.utils import timezone
+
+def calcular_estado_apartamentos():
+    hoy = timezone.localdate()
+
+    apartamentos = Apartamento.objects.select_related('ocupante_actual').all()
+
+    resultado = []
+
+    for apto in apartamentos:
+        usuario = apto.ocupante_actual
+
+        pagos_aprobados = Pago.objects.filter(
+            apartamento=apto,
+            estado='aprobado'
+        ).order_by('-fecha_pago')
+
+        if pagos_aprobados.exists():
+            ultimo_pago = pagos_aprobados.first().fecha_pago
+            meses_deuda = (hoy.year - ultimo_pago.year) * 12 + (hoy.month - ultimo_pago.month)
+        else:
+            meses_deuda = 12  # nunca ha pagado
+
+        resultado.append({
+            'apartamento': apto,
+            'usuario': usuario,
+            'meses_deuda': max(0, meses_deuda)
+        })
+
+    return resultado
+
+# ============================================================
+# FUNCIÓN CENTRAL (LA CLAVE DE TODO)
+# Calcula cuántos meses debe un apartamento
+# ============================================================
+def calcular_meses_deuda(apartamento):
+    hoy = timezone.localdate()
+
+    pagos_aprobados = Pago.objects.filter(
+        apartamento=apartamento,
+        estado='aprobado'
+    ).order_by('-fecha_pago')
+
+    if pagos_aprobados.exists():
+        ultimo_pago = pagos_aprobados.first().fecha_pago
+        meses = (hoy.year - ultimo_pago.year) * 12 + (hoy.month - ultimo_pago.month)
+        return max(0, meses)
+    else:
+        # Nunca ha pagado
+        return 12
 
 
 # =============================
@@ -17,7 +67,7 @@ def notificar_pago(request):
         messages.error(request, "Solo los residentes pueden notificar pagos.")
         return redirect('home')
 
-    apartamento = getattr(request.user, "apartamento", None)
+    apartamento = Apartamento.objects.filter(ocupante_actual=request.user).first()
 
     if not apartamento:
         messages.error(request, "No tienes un apartamento asignado.")
@@ -45,63 +95,75 @@ def notificar_pago(request):
 # =============================
 # ESTADO DE CUENTA (RESIDENTE)
 # =============================
-
 @login_required
-def estado_cuenta(request, apto_id=None):
-        apartamento = Apartamento.objects.first()
-        pagos = Pago.objects.filter(apartamento=apartamento)
-        total_pagado = sum(p.monto for p in pagos if p.estado == 'aprobado')
+def estado_cuenta_residente(request):
+    apartamento = Apartamento.objects.filter(ocupante_actual=request.user).first()
 
-        return render(request, "estado_cuenta.html", {
-            "apartamento": apartamento,
-            "pagos": pagos,
-            "total_pagado": total_pagado
-        })  
+    if not apartamento:
+        messages.error(request, "No tienes un apartamento asignado.")
+        return redirect('home')
+
+    pagos = Pago.objects.filter(apartamento=apartamento)
+    total_pagado = sum(p.monto for p in pagos if p.estado == 'aprobado')
+
+    return render(request, "pagos/estado_cuenta.html", {
+        "apartamento": apartamento,
+        "pagos": pagos,
+        "total_pagado": total_pagado
+    })
+
 
 # =============================
-# ESTADO PAGOS (ADMIN)
+# ESTADO DE CUENTA (ADMIN)
+# =============================
+@login_required
+def estado_cuenta_admin(request, apto_id):
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden acceder.")
+        return redirect('home')
+
+    apartamento = get_object_or_404(Apartamento, id=apto_id)
+
+    pagos = Pago.objects.filter(apartamento=apartamento).order_by('-fecha_pago')
+    total_pagado = sum(p.monto for p in pagos if p.estado == "aprobado")
+
+    return render(request, "pagos/estado_cuenta_admin.html", {
+        "apartamento": apartamento,
+        "pagos": pagos,
+        "total_pagado": total_pagado
+    })
+
+
+# =============================
+# PANEL GENERAL DE PAGOS (ADMIN)
 # =============================
 @login_required
 def estado_pagos(request):
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden acceder.")
+        return redirect('home')
+
+    data = calcular_estado_apartamentos()
+
+    return render(request, 'pagos/estado_pagos.html', {
+        'data': data
+    })
+
+# =============================
+# MOROSIDAD (SOLO LOS QUE DEBEN)
+# =============================
+@login_required
+def morosidad(request):
     if not (request.user.es_admin or request.user.es_seguridad):
         messages.error(request, "No tienes permiso.")
         return redirect('home')
 
-    hoy = timezone.localdate()
-    apartamentos = Apartamento.objects.all()
+    data = calcular_estado_apartamentos()
 
-    estados = []
+    morosos = [d for d in data if d['meses_deuda'] > 0]
 
-    for apto in apartamentos:
-        # pagos aprobados de ese apartamento
-        pagos_aprobados = Pago.objects.filter(
-            apartamento=apto,
-            estado='aprobado'
-        ).order_by('-fecha_pago')
-
-        # último pago
-        ultimo_pago = pagos_aprobados.first()
-
-        if ultimo_pago:
-            # diferencia en meses desde último pago
-            meses_deuda = (hoy.year - ultimo_pago.fecha_pago.year) * 12 + (
-                hoy.month - ultimo_pago.fecha_pago.month
-            )
-        else:
-            # nunca ha pagado
-            meses_deuda = 12  # o el valor que quieras
-
-        al_dia = meses_deuda <= 1
-
-        estados.append({
-            "apartamento": apto,
-            "meses_deuda": max(0, meses_deuda),
-            "al_dia": al_dia
-        })
-
-    return render(request, "estado_pagos.html", {
-        "estados": estados,
-        "apartamentos": apartamentos
+    return render(request, 'pagos/morosidad.html', {
+        'morosos': morosos
     })
 
 # =============================
@@ -115,7 +177,7 @@ def validar_pagos(request):
 
     pagos_pendientes = Pago.objects.filter(estado='pendiente').order_by('-creado_en')
 
-    return render(request, "validar_pagos.html", {
+    return render(request, "pagos/validar_pagos.html", {
         "pagos_pendientes": pagos_pendientes
     })
 
@@ -196,6 +258,8 @@ def reporte_pagos(request):
     response = HttpResponse(texto, content_type="text/plain")
     response["Content-Disposition"] = "attachment; filename=reporte_pagos.txt"
     return response
+
+
 # =============================
 # REGISTRAR PAGO (ADMIN)
 # =============================
