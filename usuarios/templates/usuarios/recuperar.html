@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Recuperar Contraseña{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Recuperar Contraseña</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p>Ingresa tu correo y el administrador te ayudará.</p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo electrónico</label>
+                    <input type="email" name="email" id="email" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+            </form>
+        </div>
+    </div>
+
+    <a href="{% url 'login' %}" class="btn btn-link mt-3">Volver al login</a>
+</div>
+{% endblock %}

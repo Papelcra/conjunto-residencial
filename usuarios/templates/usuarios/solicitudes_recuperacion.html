@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitudes de Recuperación{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Solicitudes de Recuperación Pendientes</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if solicitudes %}
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Fecha Solicitud</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sol in solicitudes %}
+                        <tr>
+                            <td>{{ sol.usuario.get_full_name|default:sol.usuario.username }}</td>
+                            <td>{{ sol.email }}</td>
+                            <td>{{ sol.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <!-- Botón para abrir modal o formulario inline -->
+                                <button type="button" class="btn btn-sm btn-success" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#cambiarPass{{ sol.id }}">
+                                    Cambiar contraseña
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Modal para cambiar contraseña -->
+                        <div class="modal fade" id="cambiarPass{{ sol.id }}" tabindex="-1" aria-labelledby="cambiarPassLabel{{ sol.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cambiarPassLabel{{ sol.id }}">
+                                            Cambiar contraseña para {{ sol.usuario.username }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="solicitud_id" value="{{ sol.id }}">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="id_new_password1">Nueva contraseña</label>
+                                                <input type="password" name="new_password1" id="id_new_password1" class="form-control" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="id_new_password2">Repite la contraseña</label>
+                                                <input type="password" name="new_password2" id="id_new_password2" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-success">Cambiar y procesar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No hay solicitudes pendientes.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No hay solicitudes de recuperación pendientes.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Volver al Dashboard</a>
+</div>
+{% endblock %}

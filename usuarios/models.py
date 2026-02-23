@@ -45,3 +45,17 @@ class Usuario(AbstractUser):
             return None
     
 
+class RecuperacionSolicitud(models.Model):
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, related_name='solicitudes_recuperacion')
+    email = models.EmailField()
+    fecha_solicitud = models.DateTimeField(auto_now_add=True)
+    procesada = models.BooleanField(default=False)
+    fecha_procesada = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Solicitud de Recuperación"
+        verbose_name_plural = "Solicitudes de Recuperación"
+        ordering = ['-fecha_solicitud']
+
+    def __str__(self):
+        return f"Solicitud de {self.email} - {self.fecha_solicitud.date()}" 

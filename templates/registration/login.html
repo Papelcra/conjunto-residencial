@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
+
 {% block title %}Iniciar sesión{% endblock %}
 
 {% block content %}
@@ -27,9 +28,15 @@
                         {{ form.username|add_class:"form-control" }}
                     </div>
 
-                    <div class="mb-3">
+                    <!-- Campo contraseña con ojito -->
+                    <div class="mb-3 position-relative">
                         <label for="{{ form.password.id_for_label }}" class="form-label">Contraseña</label>
-                        {{ form.password|add_class:"form-control" }}
+                        {{ form.password|add_class:"form-control pe-5" }}
+                        <span class="position-absolute end-0 top-50 translate-middle-y pe-3" 
+                              style="cursor: pointer; z-index: 10;" 
+                              onclick="togglePassword()">
+                            <i class="bi bi-eye-slash fs-5" id="toggleIcon"></i>
+                        </span>
                     </div>
 
                     <div class="d-grid">
@@ -37,12 +44,33 @@
                     </div>
                 </form>
 
+                <!-- Enlace recuperar contraseña -->
                 <div class="text-center mt-3">
-                    <small class="text-muted">¿Olvidaste tu contraseña? (por ahora no implementado)</small>
+                    <a href="{% url 'usuarios:recuperar_contrasena' %}" class="text-primary small fw-bold">
+                        ¿Olvidaste tu contraseña?
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Script para el ojito (show/hide password) -->
+<script>
+function togglePassword() {
+    const passwordField = document.getElementById("id_password");
+    const toggleIcon = document.getElementById("toggleIcon");
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bi-eye-slash");
+        toggleIcon.classList.add("bi-eye");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
+}
+</script>
 
 {% endblock %}
