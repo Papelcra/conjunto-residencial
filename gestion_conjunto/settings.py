@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'mantenimientos',
     'novedades',
     'core',
+    'zonas',
 
     # Paquetes extras
     'crispy_forms',

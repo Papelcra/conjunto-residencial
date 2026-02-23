@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Calendario de Reservas{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-center fw-bold">
+        Calendario de Reservas
+    </h2>
+
+    <div id="calendar"></div>
+
+    <!-- Pasamos los eventos como JSON seguro -->
+    <script id="eventos-data" type="application/json">
+        {{ eventos }}
+    </script>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const calendarEl = document.getElementById('calendar');
+
+    // 🔥 Leemos el JSON correctamente
+    const eventos = JSON.parse(
+        document.getElementById('eventos-data').textContent
+    );
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        height: 650,
+
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+
+        events: eventos,
+
+        eventColor: '#6f42c1',
+        eventTextColor: 'white',
+        eventDisplay: 'block',
+        nowIndicator: true
+    });
+
+    calendar.render();
+});
+</script>
+
+<style>
+#calendar {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+</style>
+
+{% endblock %}

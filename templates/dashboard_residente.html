@@ -9,7 +9,7 @@
     <h2 class="mb-4 fw-bold">Panel del Residente</h2>
 
     <div class="alert alert-success shadow-sm">
-        Bienvenido, {{ user.get_full_name|default:user.username }}
+        Bienvenido, <strong>{{ user.get_full_name|default:user.username }}</strong>
     </div>
 
     <div class="mb-4">
@@ -20,19 +20,27 @@
     <div class="row g-4">
 
         <!-- RESERVAS -->
-        <div class="col-lg-3 col-md-6">
-            <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
-                <div class="card-body d-flex flex-column justify-content-center">
+        <div class="col-lg-4 col-md-6">
+            <div class="card dashboard-card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
 
                     <div class="icon-circle bg-primary text-white mb-4">
-                        <i class="bi bi-calendar-check fs-1"></i>
+                        <i class="bi bi-calendar-plus fs-1"></i>
                     </div>
 
-                    <h5 class="card-title">Mis Reservas</h5>
-                    <p class="text-muted small">Reservar zonas comunes</p>
+                    <h5 class="card-title">Reservar Zona Común</h5>
+                    <p class="text-muted small">
+                        Reserva el salón social, BBQ u otras zonas disponibles.
+                    </p>
 
-                    <a href="#" class="btn btn-primary mt-auto">
-                        Ver / Reservar
+                    <a href="{% url 'zonas:crear' %}" 
+                       class="btn btn-primary mt-2">
+                        Reservar ahora
+                    </a>
+
+                    <a href="{% url 'zonas:calendario' %}" 
+                       class="btn btn-outline-secondary mt-2">
+                        Ver disponibilidad
                     </a>
 
                 </div>
@@ -40,16 +48,18 @@
         </div>
 
         <!-- NOTIFICAR PAGO -->
-        <div class="col-lg-3 col-md-6">
-            <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
-                <div class="card-body d-flex flex-column justify-content-center">
+        <div class="col-lg-4 col-md-6">
+            <div class="card dashboard-card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
 
                     <div class="icon-circle bg-success text-white mb-4">
                         <i class="bi bi-receipt fs-1"></i>
                     </div>
 
                     <h5 class="card-title">Notificar Pago</h5>
-                    <p class="text-muted small">Subir comprobante</p>
+                    <p class="text-muted small">
+                        Sube tu comprobante de pago de administración.
+                    </p>
 
                     <a href="{% url 'pagos:notificar_pago' %}" 
                        class="btn btn-success mt-auto">
@@ -60,20 +70,45 @@
             </div>
         </div>
 
+        <!-- ESTADO DE CUENTA -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card dashboard-card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
+
+                    <div class="icon-circle bg-info text-white mb-4">
+                        <i class="bi bi-house-door fs-1"></i>
+                    </div>
+
+                    <h5 class="card-title">Mi Estado de Cuenta</h5>
+                    <p class="text-muted small">
+                        Consulta pagos realizados y estado actual.
+                    </p>
+
+                    <a href="{% url 'pagos:estado_cuenta' %}" 
+                       class="btn btn-info text-white mt-auto">
+                        Ver estado
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
         <!-- PQRS -->
-        <div class="col-lg-3 col-md-6">
-            <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
-                <div class="card-body d-flex flex-column justify-content-center">
+        <div class="col-lg-4 col-md-6">
+            <div class="card dashboard-card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
 
                     <div class="icon-circle bg-warning text-white mb-4">
                         <i class="bi bi-chat-dots fs-1"></i>
                     </div>
 
                     <h5 class="card-title">PQRS</h5>
-                    <p class="text-muted small">Reportes y solicitudes</p>
+                    <p class="text-muted small">
+                        Envía peticiones, quejas o solicitudes.
+                    </p>
 
-                    <a href="#" class="btn btn-warning mt-auto">
-                        Reportar
+                    <a href="#" class="btn btn-warning mt-auto disabled">
+                        Próximamente
                     </a>
 
                 </div>
@@ -83,5 +118,39 @@
     </div>
 
 </div>
+
+<style>
+.dashboard-card {
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+}
+
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.btn {
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-weight: 600;
+}
+
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+</style>
 
 {% endblock %}

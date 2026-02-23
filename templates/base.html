@@ -9,96 +9,152 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
-          rel="stylesheet" 
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
-          crossorigin="anonymous">
+          rel="stylesheet">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Estilos personalizados -->
+    <style>
+        .hover-card {
+            transition: all 0.3s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 2rem rgba(0,0,0,.15);
+        }
+    </style>
 
     {% block extra_css %}{% endblock %}
 </head>
+
 <body class="d-flex flex-column min-vh-100 bg-light">
-    {% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top" style="backdrop-filter: blur(6px);">
-
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
         <div class="container-fluid px-4">
+
             <a class="navbar-brand fw-bold" href="{% url 'home' %}">
                 <i class="bi bi-building-fill me-2"></i>Conjunto Residencial
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-                    data-bs-target="#navbarMain" aria-controls="navbarMain" 
-                    aria-expanded="false" aria-label="Toggle navigation">
+                    data-bs-target="#navbarMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarMain">
-                <!-- Menú izquierdo - según rol -->
+
+                <!-- Menú según rol -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                     {% if user.is_authenticated %}
+
                         {% if user.es_admin %}
+
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'core:lista_apartamentos' %}">
                                     <i class="bi bi-building me-1"></i>Apartamentos
                                 </a>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people-fill me-1"></i>Usuarios</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-cash-coin me-1"></i>Pagos y morosidad</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-calendar-event me-1"></i>Reservas</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-megaphone me-1"></i>Anuncios</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-exclamation-triangle me-1"></i>PQRS</a></li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'pagos:estado_pagos' %}">
+                                    <i class="bi bi-cash-coin me-1"></i>Pagos y morosidad
+                                </a>
+                            </li>
+
+                            <!-- ===== ZONAS ===== -->
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'zonas:calendario' %}">
+                                    <i class="bi bi-calendar-event me-1"></i>Calendario Reservas
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'zonas:crear' %}">
+                                    <i class="bi bi-calendar-plus me-1"></i>Crear Reserva
+                                </a>
+                            </li>
+
+                            <!-- 🔥 NUEVO: Crear Zona Común -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'zonas:crear_zona' %}">
+                                    <i class="bi bi-building-add me-1"></i>Crear Zona
+                                </a>
+                            </li>
 
                         {% elif user.es_seguridad %}
+
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'core:lista_apartamentos' %}">
                                     <i class="bi bi-building me-1"></i>Apartamentos
                                 </a>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-person-badge-fill me-1"></i>Residentes</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-calendar-check me-1"></i>Reservas hoy</a></li>
 
-                        {% else %}  {# residente #}
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-house-door-fill me-1"></i>Mi apartamento</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'zonas:calendario' %}">
+                                    <i class="bi bi-calendar-check me-1"></i>Reservas hoy
+                                </a>
+                            </li>
+
+                        {% else %}  <!-- RESIDENTE -->
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'pagos:estado_cuenta' %}">
+                                    <i class="bi bi-house-door-fill me-1"></i>Mi apartamento
+                                </a>
+                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'pagos:notificar_pago' %}">
                                     <i class="bi bi-receipt me-1"></i>Notificar pago
                                 </a>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-calendar-plus me-1"></i>Reservar zona común</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-chat-square-text me-1"></i>Mis PQRS</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-newspaper me-1"></i>Anuncios</a></li>
+
+                            <!-- ZONAS -->
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'zonas:crear' %}">
+                                    <i class="bi bi-calendar-plus me-1"></i>Reservar zona común
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'zonas:calendario' %}">
+                                    <i class="bi bi-calendar-check me-1"></i>Ver disponibilidad
+                                </a>
+                            </li>
+
                         {% endif %}
+
                     {% endif %}
                 </ul>
 
-                <!-- Menú derecho -->
+                <!-- Usuario -->
                 <ul class="navbar-nav ms-auto align-items-center">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button" 
-                               data-bs-toggle="dropdown" aria-expanded="false">
+                               data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle me-2"></i>
                                 {{ user.get_full_name|default:user.username }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Mi perfil</a></li>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-gear me-2"></i>Mi perfil
+                                    </a>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="post" action="{% url 'logout' %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent text-start w-100">
+                                        <button type="submit" 
+                                                class="dropdown-item text-danger border-0 bg-transparent text-start w-100">
                                             <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
                                         </button>
                                     </form>
@@ -113,22 +169,13 @@
                         </li>
                     {% endif %}
                 </ul>
+
             </div>
         </div>
     </nav>
 
-    <!-- Contenido principal -->
+    <!-- Contenido -->
     <main class="container py-4 flex-grow-1" style="margin-top:80px; margin-bottom:70px;">
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-
         {% block content %}
         {% endblock %}
     </main>
@@ -139,9 +186,7 @@
     </footer>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block extra_js %}{% endblock %}
 </body>
