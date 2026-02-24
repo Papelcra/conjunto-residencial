@@ -61,12 +61,18 @@
                                     <span class="text-muted">Sin apartamento asignado</span>
                                 {% endif %}
                             </td>
+
                             <td>
-                                {{ item.residente.get_full_name|default:item.residente.username }}
-                                {% if item.residente.telefono %}
-                                    <br><small class="text-muted">Tel: {{ item.residente.telefono }}</small>
+                                {% if item.residente %}
+                                    {{ item.residente.get_full_name|default:item.residente.username }}
+                                    {% if item.residente.telefono %}
+                                        <br><small class="text-muted">Tel: {{ item.residente.telefono }}</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">Sin residente asignado</span>
                                 {% endif %}
                             </td>
+
                             <td>
                                 {% if item.estado_pago == "aprobado" %}
                                     <span class="badge bg-success">Al día</span>
@@ -80,6 +86,7 @@
                                     </span>
                                 {% endif %}
                             </td>
+
                             <td>
                                 {% if item.apartamento and item.apartamento.estado %}
                                     <span class="badge bg-info">
@@ -104,7 +111,6 @@
                                 </a>
                             </td>
                             {% endif %}
-
                         </tr>
                         {% empty %}
                         <tr>
