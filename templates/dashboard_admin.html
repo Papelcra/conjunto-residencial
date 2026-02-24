@@ -3,36 +3,34 @@
 {% block title %}Dashboard Administrador{% endblock %}
 
 {% block content %}
-<div class="container mt-5 mb-5">
+<div class="container mt-4 mb-5">
 
-    <!-- Título y saludo -->
+    <!-- Título -->
     <div class="text-center mb-5">
-        <h1 class="fw-bold display-5">Panel de Administración</h1>
-        <p class="lead text-muted">
-            Bienvenido, <strong>{{ user.get_full_name|default:user.username }}</strong> (Administrador)
+        <h1 class="fw-bold display-6">Panel de Administración</h1>
+        <p class="text-muted">
+            Bienvenido, <strong>{{ user.get_full_name|default:user.username }}</strong>
         </p>
     </div>
 
-    <!-- Tarjetas principales -->
+    <!-- TARJETAS -->
     <div class="row g-4">
 
         <!-- Apartamentos -->
         <div class="col-lg-3 col-md-6">
-            <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
-                <div class="card-body d-flex flex-column justify-content-center">
+            <div class="card dashboard-card h-100 text-center">
+                <div class="card-body d-flex flex-column">
                     <div class="icon-circle bg-primary text-white mb-4">
-                        <i class="bi bi-building-fill fs-1"></i>
+                        <i class="bi bi-building-fill"></i>
                     </div>
-                    <h5 class="card-title">Apartamentos</h5>
-                    <p class="text-muted small">Gestiona residentes, estados y ocupación</p>
-                    <a href="{% url 'core:lista_apartamentos' %}" class="btn btn-primary mt-auto">
-                        Ver / Gestionar
-                    </a>
+                    <h5>Apartamentos</h5>
+                    <p class="text-muted small">Gestión de unidades</p>
+                    <a href="{% url 'core:lista_apartamentos' %}" class="btn btn-primary mt-auto">Ver</a>
                 </div>
             </div>
         </div>
 
-        <!-- Gestión de Arrendatarios -->
+        <!-- Arrendatarios -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
                 <div class="card-body d-flex flex-column justify-content-center">
@@ -48,17 +46,31 @@
             </div>
         </div>
 
-        <!-- Pagos y morosidad -->
+        <!-- Pagos -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
                 <div class="card-body d-flex flex-column justify-content-center">
                     <div class="icon-circle bg-success text-white mb-4">
-                        <i class="bi bi-cash-coin fs-1"></i>
+                        <i class="bi bi-cash-coin"></i>
                     </div>
-                    <h5 class="card-title">Pagos</h5>
-                    <p class="text-muted small">Registra, consulta y valida pagos</p>
-                    <a href="{% url 'pagos:estado_pagos' %}" class="btn btn-success mt-auto">
-                        Ver pagos
+                    <h5>Pagos</h5>
+                    <p class="text-muted small">Administración financiera</p>
+                    <a href="{% url 'pagos:estado_pagos' %}" class="btn btn-success mt-auto">Ver</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mantenimientos (nueva de develop) -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card dashboard-card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <div class="icon-circle bg-warning text-white mb-4">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <h5>Mantenimientos</h5>
+                    <p class="text-muted small">Solicitudes</p>
+                    <a href="{% url 'mantenimientos:admin_lista' %}" class="btn btn-warning mt-auto">
+                        Gestionar
                     </a>
                 </div>
             </div>
@@ -112,23 +124,23 @@
             </div>
         </div>
 
-        <!-- Anuncios y novedades -->
+        <!-- Anuncios (nueva de develop) -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
                 <div class="card-body d-flex flex-column justify-content-center">
                     <div class="icon-circle bg-info text-white mb-4">
-                        <i class="bi bi-megaphone fs-1"></i>
+                        <i class="bi bi-megaphone-fill"></i>
                     </div>
                     <h5 class="card-title">Anuncios</h5>
-                    <p class="text-muted small">Publica información importante</p>
-                    <a href="#" class="btn btn-info text-white mt-auto disabled">
-                        Próximamente
+                    <p class="text-muted small">Comunicados oficiales</p>
+                    <a href="{% url 'admin_lista_anuncios' %}" class="btn btn-info mt-auto">
+                        Gestionar
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Reservas (activado y enlazado a gestión personalizada) -->
+        <!-- Reservas -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
                 <div class="card-body d-flex flex-column justify-content-center">
@@ -144,7 +156,7 @@
             </div>
         </div>
 
-        <!-- Reservas pendientes (admin) -->
+        <!-- Reservas pendientes -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
                 <div class="card-body d-flex flex-column justify-content-center">
@@ -160,7 +172,7 @@
             </div>
         </div>
 
-        <!-- Ver todas las reservas (admin) -->
+        <!-- Todas las reservas -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-lg h-100 text-center hover-lift">
                 <div class="card-body d-flex flex-column justify-content-center">
@@ -201,9 +213,9 @@
                     </div>
                     <h5 class="card-title">PQRS</h5>
                     <p class="text-muted small">Peticiones, quejas y reclamos</p>
-          <a href="{% url 'pqrs:listar_pqrs' %}" class="btn btn-danger mt-auto">
-    Ver PQRS
-</a>
+                    <a href="{% url 'pqrs:listar_pqrs' %}" class="btn btn-danger mt-auto">
+                        Ver PQRS
+                    </a>
                 </div>
             </div>
         </div>
@@ -211,42 +223,51 @@
     </div>
 </div>
 
-<!-- Estilos mejorados -->
 <style>
-.dashboard-card {
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    background: white;
+/* ===== CARRUSEL BONITO ===== */
+.carousel-card {
+    background: linear-gradient(135deg, #c8b6ff, #a0c4ff);
+    border-radius: 18px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
+/* tarjetas */
+.dashboard-card {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
 .dashboard-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    transform: translateY(-6px);
+    box-shadow: 0 18px 35px rgba(0,0,0,0.15);
 }
 
 .icon-circle {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
-    margin: 0 auto 1.5rem;
+    font-size: 28px;
+    margin: 0 auto;
 }
 
-.btn {
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-weight: 600;
+/* morado pastel */
+.bg-purple { background-color: #c8b6ff; }
+.btn-purple {
+    background-color: #c8b6ff;
+    border: none;
+    color: #4b2e83;
 }
-
-.bg-purple { background-color: #6f42c1; }
-.btn-purple { background-color: #6f42c1; border-color: #6f42c1; }
-
-.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.btn-purple:hover {
+    background-color: #b197fc;
+    color: #3a2167;
 }
 </style>
+
 {% endblock %}

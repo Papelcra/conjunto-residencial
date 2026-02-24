@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Gestionar mantenimiento</h2>
+
+    <form method="post" class="card p-4 shadow-sm">
+        {% csrf_token %}
+
+        <p><strong>Apartamento:</strong> {{ mantenimiento.apartamento }}</p>
+        <p><strong>Residente:</strong> {{ mantenimiento.residente }}</p>
+        <p><strong>Descripción:</strong> {{ mantenimiento.descripcion }}</p>
+
+        <div class="mb-3">
+            <label class="form-label">Estado</label>
+            <select name="estado" class="form-select">
+                <option value="pendiente" {% if mantenimiento.estado == "pendiente" %}selected{% endif %}>
+                    Pendiente
+                </option>
+                <option value="proceso" {% if mantenimiento.estado == "proceso" %}selected{% endif %}>
+                    En proceso
+                </option>
+                <option value="completado" {% if mantenimiento.estado == "completado" %}selected{% endif %}>
+                    Completado
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Respuesta del administrador</label>
+            <textarea name="respuesta_admin" class="form-control" rows="4">{{ mantenimiento.respuesta_admin }}</textarea>
+        </div>
+
+        <button class="btn btn-success">Guardar cambios</button>
+        <a href="{% url 'mantenimientos:admin_lista' %}" class="btn btn-secondary">Volver</a>
+    </form>
+</div>
+
+{% endblock %}

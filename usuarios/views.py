@@ -7,11 +7,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from django.utils import timezone  # ← AGREGADO AQUÍ para usar timezone.now()
+from django.utils import timezone
 
 # Modelos y forms
 from .models import Usuario, RecuperacionSolicitud
 from .forms import CustomUserCreationForm
+from django.contrib.auth.forms import SetPasswordForm
 
 
 # =============================================
@@ -73,7 +74,7 @@ def recuperar_contrasena(request):
                             f'Fecha y hora: {timezone.now().strftime("%d/%m/%Y %H:%M")}\n'
                             f'IP: {request.META.get("REMOTE_ADDR", "No disponible")}',
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=['tuemailreal@dominio.com'],  # ← TU CORREO
+                    recipient_list=['tuemailreal@dominio.com'],  # ← CAMBIA POR TU CORREO
                     fail_silently=False,
                 )
             except Usuario.DoesNotExist:
@@ -84,8 +85,10 @@ def recuperar_contrasena(request):
 
     return render(request, 'usuarios/recuperar.html')
 
-from django.contrib.auth.forms import SetPasswordForm
 
+# =============================================
+# SOLICITUDES DE RECUPERACIÓN (para admin)
+# =============================================
 @login_required
 def solicitudes_recuperacion(request):
     if not request.user.es_admin:
@@ -113,4 +116,31 @@ def solicitudes_recuperacion(request):
     return render(request, 'usuarios/solicitudes_recuperacion.html', {
         'solicitudes': solicitudes,
         'form': form,
+    })
+
+
+# =============================================
+# PANEL RESIDENTE (CON CARRUSEL SIMULADO - de develop)
+# =============================================
+def panel_residente(request):
+    anuncios = [
+        {
+            "titulo": "Corte de agua programado",
+            "descripcion": "El martes 10:00 AM se realizará mantenimiento.",
+            "imagen": "https://via.placeholder.com/900x350?text=Corte+de+agua"
+        },
+        {
+            "titulo": "Reunión de copropietarios",
+            "descripcion": "Asamblea general el sábado 6:00 PM.",
+            "imagen": "https://via.placeholder.com/900x350?text=Asamblea"
+        },
+        {
+            "titulo": "Mantenimiento ascensor",
+            "descripcion": "El ascensor torre B estará fuera de servicio.",
+            "imagen": "https://via.placeholder.com/900x350?text=Ascensor"
+        }
+    ]
+
+    return render(request, "usuarios/dashboard_residente.html", {
+        "anuncios": anuncios
     })
