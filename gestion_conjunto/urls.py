@@ -3,17 +3,17 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from core.views import CustomLogoutView
-
-# 👇 IMPORTANTE: importar esto para servir archivos media
+from core.views import CustomLogoutView, dashboard
+from core.views import dashboard_residente
 from django.conf import settings
 from django.conf.urls.static import static
 
 
-# Vista del dashboard dinámico por rol
+# =============================
+# DASHBOARD DINÁMICO POR ROL
+# =============================
 @login_required
 def dashboard(request):
-    # Recargar el usuario desde la base de datos (evita caché vieja)
     request.user.refresh_from_db()
 
     if request.user.rol == 'admin':
@@ -26,29 +26,44 @@ def dashboard(request):
     return render(request, template, {'user': request.user})
 
 
+# =============================
+# URLS PRINCIPALES
+# =============================
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Autenticación
-    path('accounts/login/', auth_views.LoginView.as_view(
-        template_name='registration/login.html'
-    ), name='login'),
-
+    path(
+        'accounts/login/',
+        auth_views.LoginView.as_view(
+            template_name='registration/login.html'
+        ),
+        name='login'
+    ),
     path('accounts/logout/', CustomLogoutView.as_view(), name='logout'),
 
-    # Ruta raíz
+    # Dashboard
     path('', dashboard, name='home'),
-
-    # arrendatarios
-    path('arrendatarios/', include('arrendatarios.urls')),
+    
 
     # Apps
-    path('', include('core.urls')),
+    path('arrendatarios/', include('arrendatarios.urls')),
+    path('core/', include('core.urls')),
     path('apartamentos/', include('apartamentos.urls')),
     path('pagos/', include('pagos.urls')),
     path('usuarios/', include('usuarios.urls')),
+    path('mantenimientos/', include('mantenimientos.urls')),
+    path('anuncios/', include('anuncios.urls')),   # ✅ SOLO UNA VEZ
+    path('reservas/', include('reservas.urls')),
+    path('pqrs/', include('pqrs.urls')),
+    
+
+path('dashboard/residente/', dashboard_residente, name='dashboard_residente'),
 ]
 
-# 👇 ESTA PARTE ES LA QUE HACE QUE SE VEAN LAS IMÁGENES SUBIDAS
+
+# =============================
+# MEDIA FILES
+# =============================
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

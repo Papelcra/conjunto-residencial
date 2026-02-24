@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Administrar anuncios</h2>
+        <a href="{% url 'anuncio_crear' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo anuncio
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Título</th>
+                            <th>Fecha</th>
+                            <th>Destacado</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for a in anuncios %}
+                        <tr>
+                            <td class="fw-semibold">{{ a.titulo }}</td>
+                            <td>{{ a.fecha_publicacion|date:"d/m/Y" }}</td>
+
+                            <td>
+                                {% if a.destacado %}
+                                    <span class="badge bg-success">Sí</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-end">
+                                <a href="{% url 'anuncio_editar' a.id %}" 
+                                   class="btn btn-sm btn-warning rounded-pill">
+                                    Editar
+                                </a>
+                                <a href="{% url 'anuncio_eliminar' a.id %}" 
+                                   class="btn btn-sm btn-danger rounded-pill">
+                                    Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                No hay anuncios registrados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

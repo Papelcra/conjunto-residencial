@@ -2,7 +2,12 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from apartamentos.models import Apartamento
-
+from anuncios.models import Anuncio
+from django.contrib.auth.views import LogoutView
+from django.contrib import messages
+from django.contrib.auth.views import LogoutView
+from django.contrib import messages
+from django.urls import reverse_lazy
 
 @login_required
 def lista_apartamentos(request):
@@ -27,11 +32,7 @@ def lista_apartamentos(request):
 
     return render(request, 'core/lista_apartamentos.html', context)
 
-from django.contrib.auth.views import LogoutView
-from django.contrib import messages
-from django.contrib.auth.views import LogoutView
-from django.contrib import messages
-from django.urls import reverse_lazy
+
 
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('login')  # o '/accounts/login/'
@@ -40,3 +41,35 @@ class CustomLogoutView(LogoutView):
         # Mensaje opcional (queda muy bien)
         messages.success(request, "Has cerrado sesión correctamente. ¡Vuelve pronto!")
         return super().dispatch(request, *args, **kwargs)
+
+
+@login_required
+def dashboard(request):
+    request.user.refresh_from_db()
+
+    anuncios = Anuncio.objects.order_by("-fecha_publicacion")
+
+    if request.user.rol == 'admin':
+        template = 'dashboard_admin.html'
+    elif request.user.rol == 'seguridad':
+        template = 'dashboard_seguridad.html'
+    else:
+        template = 'dashboard_residente.html'
+
+    context = {
+        'user': request.user,
+        'anuncios': anuncios
+    }
+
+    return render(request, template, context)
+
+@login_required
+def dashboard_residente(request):
+    anuncios = Anuncio.objects.order_by("-fecha_publicacion")
+
+    context = {
+        'user': request.user,
+        'anuncios': anuncios
+    }
+
+    return render(request, 'dashboard_residente.html', context)
