@@ -43,7 +43,7 @@ def lista_residentes(request):
         messages.error(request, "No tienes permiso para ver la lista de residentes.")
         return redirect('home')
 
-    residentes = Usuario.objects.filter(rol='residente').select_related('apartamento').order_by('first_name', 'last_name')
+    residentes = Usuario.objects.filter(rol='residente').order_by('first_name', 'last_name')
 
     return render(request, 'usuarios/lista_residentes.html', {
         'residentes': residentes
