@@ -11,4 +11,5 @@ urlpatterns = [
     # Admin
     path("admin/", views.admin_lista, name="admin_lista"),
     path("admin/<int:pk>/", views.admin_editar, name="admin_editar"),
+    path('residente-lista/', views.residente_lista, name='residente_lista'),  # ← debe coincidir exactamente
 ]

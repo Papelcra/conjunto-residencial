@@ -1,42 +1,71 @@
 {% extends "base.html" %}
+
 {% block content %}
 
 <div class="container mt-4">
-    <h2 class="mb-3">Solicitar mantenimiento</h2>
+    <h2 class="mb-4">Solicitar mantenimiento</h2>
 
     <div class="card shadow-sm">
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}
 
+                <!-- Apartamento (automático del residente) -->
                 <div class="mb-3">
-                    <label class="form-label">Apartamento</label>
-                    <select name="apartamento" class="form-select" required>
-                        <option value="">Seleccione su apartamento</option>
-                        {% for a in apartamentos %}
-                            <option value="{{ a.id }}">{{ a.numero }}</option>
-                        {% endfor %}
-                    </select>
+                    <label class="form-label fw-bold">Apartamento</label>
+                    {% if apartamento %}
+                        <div class="form-control bg-light">
+                            <strong>{{ apartamento.identificador }}</strong>
+                            {% if apartamento.bloque_o_torre %}
+                                - {{ apartamento.bloque_o_torre }}
+                            {% endif %}
+                            {% if apartamento.piso %}
+                                (Piso {{ apartamento.piso }})
+                            {% endif %}
+                        </div>
+                        <input type="hidden" name="apartamento" value="{{ apartamento.id }}">
+                    {% else %}
+                        <div class="alert alert-warning">
+                            No tienes apartamento asignado. Contacta al administrador.
+                        </div>
+                        <select name="apartamento" class="form-select" disabled>
+                            <option>Sin apartamento disponible</option>
+                        </select>
+                    {% endif %}
                 </div>
 
+                <!-- Título -->
                 <div class="mb-3">
-                    <label class="form-label">Título</label>
-                    <input type="text" name="titulo" class="form-control" required>
+                    <label class="form-label fw-bold">Título del problema</label>
+                    <input type="text" name="titulo" class="form-control" required placeholder="Ej: Fuga de agua en baño principal">
                 </div>
 
+                <!-- Descripción -->
                 <div class="mb-3">
-                    <label class="form-label">Descripción del problema</label>
-                    <textarea name="descripcion" class="form-control" rows="4" required></textarea>
+                    <label class="form-label fw-bold">Descripción del problema</label>
+                    <textarea name="descripcion" class="form-control" rows="5" required placeholder="Describe con detalle el problema..."></textarea>
                 </div>
 
+                <!-- Botón enviar -->
                 <div class="text-end">
-                    <button class="btn btn-success">
-                        Enviar solicitud
-                    </button>
+                    {% if apartamento %}
+                        <button type="submit" class="btn btn-success px-5 py-2">
+                            Enviar solicitud
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success px-5 py-2" disabled>
+                            Enviar solicitud
+                        </button>
+                    {% endif %}
                 </div>
-
             </form>
         </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'mantenimientos:residente_lista' %}" class="btn btn-secondary">
+            Ver mis solicitudes
+        </a>
     </div>
 </div>
 

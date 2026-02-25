@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Mantenimiento
 from .forms import MantenimientoForm
 from apartamentos.models import Apartamento
+from django.contrib import messages
 
 
 # ==============================
@@ -10,21 +11,30 @@ from apartamentos.models import Apartamento
 # ==============================
 @login_required
 def residente_crear(request):
-    apartamento = Apartamento.objects.filter(ocupante_actual=request.user).first()
+    if not request.user.es_residente:
+        messages.error(request, "Solo residentes pueden solicitar mantenimiento.")
+        return redirect('home')
+
+    # Obtén el apartamento del residente actual (usa la property que ya tienes)
+    apartamento = request.user.apartamento  # Esto devuelve el Apartamento o None
 
     if request.method == "POST":
         form = MantenimientoForm(request.POST)
         if form.is_valid():
             mantenimiento = form.save(commit=False)
             mantenimiento.residente = request.user
-            mantenimiento.apartamento = apartamento
+            mantenimiento.apartamento = apartamento  # Asigna automáticamente
             mantenimiento.save()
+            messages.success(request, "Solicitud de mantenimiento enviada correctamente.")
             return redirect("mantenimientos:residente_lista")
+        else:
+            messages.error(request, "Corrige los errores en el formulario.")
     else:
         form = MantenimientoForm()
 
     return render(request, "mantenimientos/residente_crear.html", {
-        "form": form
+        "form": form,
+        "apartamento": apartamento,  # ← PASAMOS EL APARTAMENTO AL TEMPLATE
     })
 
 
